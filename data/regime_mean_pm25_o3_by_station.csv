@@ -1,0 +1,51 @@
+Station,regime_name,PM2_5_ugm3_mean,O3_ppb_mean,n_days,n_hours
+AGRABAD,Dry-Sunny-Photochemical,76.3,17.8,104,1706
+AGRABAD,Humid-Transition,43.3,9.2,340,5163
+AGRABAD,Monsoon-Wet-Windy,23.2,7.1,95,1425
+AGRABAD,Stagnant-Trapping,121.8,14.2,278,5350
+AGRABAD,Ventilated-Stormy,23.3,8.1,219,3317
+BARC,Dry-Sunny-Photochemical,91.0,5.9,128,1435
+BARC,Humid-Transition,61.6,5.3,317,3423
+BARC,Monsoon-Wet-Windy,40.8,5.3,122,1678
+BARC,Stagnant-Trapping,132.4,13.4,309,3823
+BARC,Ventilated-Stormy,39.4,4.2,160,1898
+BARISHAL,Dry-Sunny-Photochemical,71.8,16.7,142,2500
+BARISHAL,Humid-Transition,47.4,6.2,303,5508
+BARISHAL,Monsoon-Wet-Windy,31.5,6.0,128,2031
+BARISHAL,Stagnant-Trapping,138.9,8.1,290,6061
+BARISHAL,Ventilated-Stormy,29.0,7.6,173,2584
+DARUS SALAM,Dry-Sunny-Photochemical,93.4,11.8,133,2594
+DARUS SALAM,Humid-Transition,50.7,6.5,324,6488
+DARUS SALAM,Monsoon-Wet-Windy,32.6,11.7,113,2238
+DARUS SALAM,Stagnant-Trapping,159.8,5.7,311,6245
+DARUS SALAM,Ventilated-Stormy,27.3,7.2,155,2999
+GAZIPUR,Dry-Sunny-Photochemical,95.3,2.5,129,2264
+GAZIPUR,Humid-Transition,43.9,4.1,324,5326
+GAZIPUR,Monsoon-Wet-Windy,26.2,3.5,124,1986
+GAZIPUR,Stagnant-Trapping,145.3,5.5,325,6771
+GAZIPUR,Ventilated-Stormy,22.2,4.2,134,2002
+KHULNA,Dry-Sunny-Photochemical,97.4,18.9,158,1327
+KHULNA,Humid-Transition,60.5,21.5,301,1481
+KHULNA,Monsoon-Wet-Windy,76.2,20.3,115,295
+KHULNA,Stagnant-Trapping,106.1,7.2,298,3881
+KHULNA,Ventilated-Stormy,64.0,19.8,164,364
+NARAYANGANJ,Dry-Sunny-Photochemical,86.7,8.7,123,1200
+NARAYANGANJ,Humid-Transition,52.5,4.6,324,4677
+NARAYANGANJ,Monsoon-Wet-Windy,25.7,4.7,124,1610
+NARAYANGANJ,Stagnant-Trapping,184.9,4.6,304,5182
+NARAYANGANJ,Ventilated-Stormy,22.6,4.8,161,2218
+RAJSHAHI,Dry-Sunny-Photochemical,56.0,12.9,184,3011
+RAJSHAHI,Humid-Transition,32.7,6.7,347,6528
+RAJSHAHI,Monsoon-Wet-Windy,22.1,5.9,99,1775
+RAJSHAHI,Stagnant-Trapping,73.1,10.9,318,6804
+RAJSHAHI,Ventilated-Stormy,19.9,6.0,88,1698
+SYLHET,Dry-Sunny-Photochemical,89.5,15.1,54,942
+SYLHET,Humid-Transition,29.7,10.8,350,5152
+SYLHET,Monsoon-Wet-Windy,20.1,8.4,247,3821
+SYLHET,Stagnant-Trapping,84.3,10.9,382,7025
+SYLHET,Ventilated-Stormy,12.3,1.9,3,56
+ALL_STATIONS,Dry-Sunny-Photochemical,81.5,12.4,240,16979
+ALL_STATIONS,Humid-Transition,44.8,7.7,579,43746
+ALL_STATIONS,Monsoon-Wet-Windy,27.9,8.0,318,16859
+ALL_STATIONS,Stagnant-Trapping,125.9,9.1,391,51142
+ALL_STATIONS,Ventilated-Stormy,26.9,7.7,272,17136

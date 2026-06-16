@@ -1,0 +1,21 @@
+thresholds: {0.25: 0.361, 0.3: 0.3948, 0.35: 0.426}
+train=86037 test=31067
+[A] lam=0.0 {'pinball': 0.20539651811122894, 'crps': 0.045642510056495667, 'picp80': 0.7134553569141715, 'picp90': 0.858116371692749, 'brier_Q30': 0.10232301416652136} (209s)
+[A] lam=0.2 {'pinball': 0.20630671083927155, 'crps': 0.045844729989767075, 'picp80': 0.7170107317572932, 'picp90': 0.8599460850856747, 'brier_Q30': 0.10139679615817063} (212s)
+[A] lam=0.5 {'pinball': 0.2188091278076172, 'crps': 0.0486229807138443, 'picp80': 0.7062581640755065, 'picp90': 0.8503845119483646, 'brier_Q30': 0.10523870051211162} (219s)
+[B] seed1 {'pinball': 0.2060316950082779, 'crps': 0.045783743262290955, 'picp80': 0.7027684219962606, 'picp90': 0.8535476910073508, 'brier_Q30': 0.09943580109088107} (215s)
+
+=============== E8 ROBUSTNESS (test 2016) ===============
+(A) physics-weight sweep:
+   lam=0.0: pinball=0.2054 crps=0.0456 picp90=0.858 brierQ30=0.1023
+   lam=0.2: pinball=0.2063 crps=0.0458 picp90=0.860 brierQ30=0.1014
+   lam=0.5: pinball=0.2188 crps=0.0486 picp90=0.850 brierQ30=0.1052
+(B) seed stability (lam=0.2):
+   seed0: pinball=0.2063 crps=0.0458 picp90=0.860 brierQ30=0.1014
+   seed1: pinball=0.2060 crps=0.0458 picp90=0.854 brierQ30=0.0994
+(C) threshold sensitivity (lam=0.2 seed0):
+   Q25: thr=0.361 base_rate=0.887 brier=0.0761
+   Q30: thr=0.395 base_rate=0.834 brier=0.1014
+   Q35: thr=0.426 base_rate=0.766 brier=0.1260
+
+Wrote results_e8.json and appended E8-20260616-040817 to RESULTS_LOG.md

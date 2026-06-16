@@ -1,0 +1,114 @@
+{
+  "PINN_full": {
+    "PR_AUC": 0.4133237735300771,
+    "ROC_AUC": 0.8097979644538964,
+    "Brier": 0.11304058879613876,
+    "base": 0.13770180436847104,
+    "n": 1053,
+    "n_pos": 145,
+    "PR_AUC_CI95": [
+      0.338,
+      0.502
+    ]
+  },
+  "PINN_no_physics": {
+    "PR_AUC": 0.408239712963188,
+    "ROC_AUC": 0.7699111347409995,
+    "Brier": 0.11184725165367126,
+    "base": 0.13770180436847104,
+    "n": 1053,
+    "n_pos": 145
+  },
+  "PINN_no_regime": {
+    "PR_AUC": 0.41764075368698705,
+    "ROC_AUC": 0.7989024760747379,
+    "Brier": 0.11337148398160934,
+    "base": 0.13770180436847104,
+    "n": 1053,
+    "n_pos": 145
+  },
+  "PINN_no_lift(independence)": {
+    "PR_AUC": 0.3793110245776418,
+    "ROC_AUC": 0.7657299103752089,
+    "Brier": 0.1270560324192047,
+    "base": 0.13770180436847104,
+    "n": 1053,
+    "n_pos": 145
+  },
+  "learned_regime_lift": {
+    "Humid-Transition": 0.86,
+    "Stagnant-Trapping": 0.863,
+    "Ventilated-Stormy": 0.902,
+    "Monsoon-Wet-Windy": 0.878,
+    "Dry-Sunny-Photochemical": 0.854
+  },
+  "learned_physics_by_regime": {
+    "Humid-Transition": {
+      "dilution_a": 0.556,
+      "wet_b": 0.842,
+      "base_loss_d": 0.544,
+      "o3_prod_p": 0.2,
+      "pm_emit_q": 0.345
+    },
+    "Stagnant-Trapping": {
+      "dilution_a": 0.433,
+      "wet_b": 0.749,
+      "base_loss_d": 0.505,
+      "o3_prod_p": 0.309,
+      "pm_emit_q": 0.54
+    },
+    "Ventilated-Stormy": {
+      "dilution_a": 0.402,
+      "wet_b": 0.737,
+      "base_loss_d": 0.458,
+      "o3_prod_p": 0.223,
+      "pm_emit_q": 0.303
+    },
+    "Monsoon-Wet-Windy": {
+      "dilution_a": 0.545,
+      "wet_b": 0.675,
+      "base_loss_d": 0.458,
+      "o3_prod_p": 0.328,
+      "pm_emit_q": 0.343
+    },
+    "Dry-Sunny-Photochemical": {
+      "dilution_a": 0.433,
+      "wet_b": 0.735,
+      "base_loss_d": 0.494,
+      "o3_prod_p": 0.237,
+      "pm_emit_q": 0.462
+    }
+  },
+  "per_regime_PR_AUC": {
+    "Dry-Sunny-Photochemical": {
+      "PR_AUC": 0.403,
+      "n": 108,
+      "n_pos": 15
+    },
+    "Humid-Transition": {
+      "PR_AUC": 0.418,
+      "n": 395,
+      "n_pos": 72
+    },
+    "Monsoon-Wet-Windy": {
+      "PR_AUC": 0.605,
+      "n": 165,
+      "n_pos": 14
+    },
+    "Stagnant-Trapping": {
+      "PR_AUC": 0.492,
+      "n": 211,
+      "n_pos": 30
+    },
+    "Ventilated-Stormy": {
+      "PR_AUC": 0.219,
+      "n": 171,
+      "n_pos": 14
+    }
+  },
+  "LOSO": {
+    "mean_PR_AUC": 0.358,
+    "std": 0.157,
+    "folds": 9
+  }
+}

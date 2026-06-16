@@ -1,0 +1,59 @@
+{
+  "PureLSTM": {
+    "PR_AUC": 0.27637925336979663,
+    "ROC_AUC": 0.7313838675375969,
+    "Brier": 0.11912821978330612,
+    "base": 0.13770180436847104,
+    "n": 1053,
+    "n_pos": 145,
+    "PR_AUC_CI95": [
+      0.223,
+      0.342
+    ],
+    "F1_test": 0.12903225806451613,
+    "thr_star": 0.581626296043396,
+    "recall_at_prec0.3": 0.42758620689655175,
+    "Brier_calibrated": 0.13257406651973724
+  },
+  "reference": {
+    "base_rate": 0.13770180436847104,
+    "persistence_PR_AUC": 0.3734085256177421
+  },
+  "per_regime_PR_AUC": {
+    "Humid-Transition": {
+      "PR_AUC": 0.298,
+      "n": 398,
+      "n_pos": 72
+    },
+    "Stagnant-Trapping": {
+      "PR_AUC": 0.265,
+      "n": 211,
+      "n_pos": 30
+    },
+    "Ventilated-Stormy": {
+      "PR_AUC": 0.148,
+      "n": 171,
+      "n_pos": 14
+    },
+    "Monsoon-Wet-Windy": {
+      "PR_AUC": 0.262,
+      "n": 165,
+      "n_pos": 14
+    },
+    "Dry-Sunny-Photochemical": {
+      "PR_AUC": 0.506,
+      "n": 108,
+      "n_pos": 15
+    }
+  },
+  "lead_times": {
+    "24h": 0.276,
+    "48h": 0.181,
+    "72h": 0.165
+  },
+  "LOSO": {
+    "mean_PR_AUC": 0.297,
+    "std": 0.125,
+    "folds": 9
+  }
+}

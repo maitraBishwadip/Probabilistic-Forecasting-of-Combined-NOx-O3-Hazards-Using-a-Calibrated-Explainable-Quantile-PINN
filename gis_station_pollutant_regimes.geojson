@@ -1,0 +1,324 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "source": "BD_DOE_2014-16.csv (9 DoE stations, hourly, 2014-01-01..2016-12-31)",
+    "units": "O3/NOx/NO2/NO/Ox in ppb",
+    "definitions": {
+      "Ox_ppb": "O3 + NO2 (combined oxidant; slowly-varying, conserved through NO<->NO2<->O3 titration)",
+      "O3_to_NOx_ratio": "ratio of station-mean O3 to station-mean NOx; low=fresh/titrated (traffic), high=aged/photochemical",
+      "combined_hazard_score": "mean of cross-station percentile ranks of mean O3 and mean NOx (0-1); higher = jointly more hazardous",
+      "pollutant_regime": "transparent 2x2 label vs cross-station medians of mean O3 and mean NOx (descriptive, no model fit)"
+    },
+    "qc": "physical-range clip applied (O3 0-300, NOx 0-2000, NO/NO2 0-1000 ppb)",
+    "note": "Descriptive EDA for GIS plotting only; not a QR-PINN experiment and not a paper headline metric.",
+    "n_stations": 9
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.802209,
+          22.323153
+        ]
+      },
+      "properties": {
+        "station": "AGRABAD",
+        "latitude": 22.323153,
+        "longitude": 91.802209,
+        "n_hours_total": 24864,
+        "o3_completeness_pct": 84.3,
+        "nox_completeness_pct": 71.8,
+        "mean_O3_ppb": 10.94,
+        "median_O3_ppb": 6.74,
+        "p95_O3_ppb": 38.28,
+        "max_O3_ppb": 86.69,
+        "mean_NOx_ppb": 40.97,
+        "median_NOx_ppb": 9.09,
+        "p95_NOx_ppb": 245.82,
+        "max_NOx_ppb": 399.6,
+        "mean_NO2_ppb": 8.53,
+        "mean_NO_ppb": 40.85,
+        "mean_Ox_ppb": 19.47,
+        "O3_to_NOx_ratio": 0.267,
+        "n_O3_valid": 20964,
+        "n_NOx_valid": 17852,
+        "combined_hazard_score": 0.833,
+        "pollutant_regime": "High-burden (NOx & O3 both high)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.539806,
+          22.842361
+        ]
+      },
+      "properties": {
+        "station": "KHULNA",
+        "latitude": 22.842361,
+        "longitude": 89.539806,
+        "n_hours_total": 24864,
+        "o3_completeness_pct": 56.1,
+        "nox_completeness_pct": 23.4,
+        "mean_O3_ppb": 15.79,
+        "median_O3_ppb": 8.89,
+        "p95_O3_ppb": 51.26,
+        "max_O3_ppb": 100.23,
+        "mean_NOx_ppb": 39.59,
+        "median_NOx_ppb": 16.7,
+        "p95_NOx_ppb": 134.59,
+        "max_NOx_ppb": 383.54,
+        "mean_NO2_ppb": 16.89,
+        "mean_NO_ppb": 26.57,
+        "mean_Ox_ppb": 44.21,
+        "O3_to_NOx_ratio": 0.399,
+        "n_O3_valid": 13941,
+        "n_NOx_valid": 5813,
+        "combined_hazard_score": 0.833,
+        "pollutant_regime": "High-burden (NOx & O3 both high)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.389406,
+          23.759733
+        ]
+      },
+      "properties": {
+        "station": "BARC",
+        "latitude": 23.759733,
+        "longitude": 90.389406,
+        "n_hours_total": 24864,
+        "o3_completeness_pct": 81.7,
+        "nox_completeness_pct": 45.8,
+        "mean_O3_ppb": 7.69,
+        "median_O3_ppb": 5.3,
+        "p95_O3_ppb": 30.9,
+        "max_O3_ppb": 100.86,
+        "mean_NOx_ppb": 141.85,
+        "median_NOx_ppb": 122.31,
+        "p95_NOx_ppb": 319.54,
+        "max_NOx_ppb": 399.81,
+        "mean_NO2_ppb": 58.8,
+        "mean_NO_ppb": 91.37,
+        "mean_Ox_ppb": 65.71,
+        "O3_to_NOx_ratio": 0.054,
+        "n_O3_valid": 20312,
+        "n_NOx_valid": 11398,
+        "combined_hazard_score": 0.722,
+        "pollutant_regime": "NOx-dominated (traffic / titration)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.867327,
+          24.88885
+        ]
+      },
+      "properties": {
+        "station": "SYLHET",
+        "latitude": 24.88885,
+        "longitude": 91.867327,
+        "n_hours_total": 24864,
+        "o3_completeness_pct": 74.0,
+        "nox_completeness_pct": 85.5,
+        "mean_O3_ppb": 10.24,
+        "median_O3_ppb": 6.61,
+        "p95_O3_ppb": 32.02,
+        "max_O3_ppb": 97.02,
+        "mean_NOx_ppb": 30.57,
+        "median_NOx_ppb": 15.57,
+        "p95_NOx_ppb": 109.63,
+        "max_NOx_ppb": 398.23,
+        "mean_NO2_ppb": 13.02,
+        "mean_NO_ppb": 19.08,
+        "mean_Ox_ppb": 23.28,
+        "O3_to_NOx_ratio": 0.335,
+        "n_O3_valid": 18388,
+        "n_NOx_valid": 21250,
+        "combined_hazard_score": 0.611,
+        "pollutant_regime": "O3-dominated (photochemical)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.355647,
+          23.78086
+        ]
+      },
+      "properties": {
+        "station": "DARUS SALAM",
+        "latitude": 23.78086,
+        "longitude": 90.355647,
+        "n_hours_total": 24864,
+        "o3_completeness_pct": 89.6,
+        "nox_completeness_pct": 84.0,
+        "mean_O3_ppb": 7.54,
+        "median_O3_ppb": 1.84,
+        "p95_O3_ppb": 44.19,
+        "max_O3_ppb": 100.97,
+        "mean_NOx_ppb": 43.91,
+        "median_NOx_ppb": 23.05,
+        "p95_NOx_ppb": 168.9,
+        "max_NOx_ppb": 399.95,
+        "mean_NO2_ppb": 16.03,
+        "mean_NO_ppb": 36.46,
+        "mean_Ox_ppb": 22.51,
+        "O3_to_NOx_ratio": 0.172,
+        "n_O3_valid": 22279,
+        "n_NOx_valid": 20883,
+        "combined_hazard_score": 0.611,
+        "pollutant_regime": "NOx-dominated (traffic / titration)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.605089,
+          24.380426
+        ]
+      },
+      "properties": {
+        "station": "RAJSHAHI",
+        "latitude": 24.380426,
+        "longitude": 88.605089,
+        "n_hours_total": 24864,
+        "o3_completeness_pct": 86.1,
+        "nox_completeness_pct": 26.8,
+        "mean_O3_ppb": 8.78,
+        "median_O3_ppb": 3.87,
+        "p95_O3_ppb": 33.81,
+        "max_O3_ppb": 82.41,
+        "mean_NOx_ppb": 27.75,
+        "median_NOx_ppb": 1.2,
+        "p95_NOx_ppb": 117.39,
+        "max_NOx_ppb": 382.78,
+        "mean_NO2_ppb": 35.19,
+        "mean_NO_ppb": 12.32,
+        "mean_Ox_ppb": 50.81,
+        "O3_to_NOx_ratio": 0.316,
+        "n_O3_valid": 21410,
+        "n_NOx_valid": 6665,
+        "combined_hazard_score": 0.5,
+        "pollutant_regime": "O3-dominated (photochemical)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.421989,
+          23.62649
+        ]
+      },
+      "properties": {
+        "station": "NARAYANGANJ",
+        "latitude": 23.62649,
+        "longitude": 90.421989,
+        "n_hours_total": 24864,
+        "o3_completeness_pct": 74.6,
+        "nox_completeness_pct": 83.5,
+        "mean_O3_ppb": 4.92,
+        "median_O3_ppb": 2.45,
+        "p95_O3_ppb": 17.45,
+        "max_O3_ppb": 67.03,
+        "mean_NOx_ppb": 30.97,
+        "median_NOx_ppb": 16.41,
+        "p95_NOx_ppb": 111.02,
+        "max_NOx_ppb": 297.39,
+        "mean_NO2_ppb": 11.78,
+        "mean_NO_ppb": 21.79,
+        "mean_Ox_ppb": 18.18,
+        "O3_to_NOx_ratio": 0.159,
+        "n_O3_valid": 18560,
+        "n_NOx_valid": 20772,
+        "combined_hazard_score": 0.389,
+        "pollutant_regime": "NOx-dominated (traffic / titration)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.362498,
+          22.709818
+        ]
+      },
+      "properties": {
+        "station": "BARISHAL",
+        "latitude": 22.709818,
+        "longitude": 90.362498,
+        "n_hours_total": 24864,
+        "o3_completeness_pct": 64.2,
+        "nox_completeness_pct": 88.0,
+        "mean_O3_ppb": 8.45,
+        "median_O3_ppb": 5.25,
+        "p95_O3_ppb": 28.44,
+        "max_O3_ppb": 91.47,
+        "mean_NOx_ppb": 6.99,
+        "median_NOx_ppb": 3.9,
+        "p95_NOx_ppb": 23.24,
+        "max_NOx_ppb": 175.48,
+        "mean_NO2_ppb": 4.66,
+        "mean_NO_ppb": 4.09,
+        "mean_Ox_ppb": 11.95,
+        "O3_to_NOx_ratio": 1.209,
+        "n_O3_valid": 15971,
+        "n_NOx_valid": 21873,
+        "combined_hazard_score": 0.333,
+        "pollutant_regime": "O3-dominated (photochemical)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.421989,
+          23.994186
+        ]
+      },
+      "properties": {
+        "station": "GAZIPUR",
+        "latitude": 23.994186,
+        "longitude": 90.421989,
+        "n_hours_total": 24864,
+        "o3_completeness_pct": 61.5,
+        "nox_completeness_pct": 54.2,
+        "mean_O3_ppb": 4.22,
+        "median_O3_ppb": 1.26,
+        "p95_O3_ppb": 16.61,
+        "max_O3_ppb": 100.73,
+        "mean_NOx_ppb": 27.58,
+        "median_NOx_ppb": 9.33,
+        "p95_NOx_ppb": 115.46,
+        "max_NOx_ppb": 399.58,
+        "mean_NO2_ppb": 6.38,
+        "mean_NO_ppb": 21.68,
+        "mean_Ox_ppb": 9.66,
+        "O3_to_NOx_ratio": 0.153,
+        "n_O3_valid": 15294,
+        "n_NOx_valid": 13481,
+        "combined_hazard_score": 0.167,
+        "pollutant_regime": "Background / low"
+      }
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "RandomForest": {
+    "PR_AUC": 0.34816359892248216,
+    "ROC_AUC": 0.7553547015038735,
+    "Brier": 0.10566505969154259,
+    "base": 0.13770180436847104,
+    "n": 1053,
+    "n_pos": 145,
+    "PR_AUC_CI95": [
+      0.275,
+      0.426
+    ],
+    "F1_test": 0.026845637583892617,
+    "thr_star": 0.5513952424654266,
+    "recall_at_prec0.3": 0.496551724137931,
+    "Brier_calibrated": 0.1352220711288485
+  },
+  "reference": {
+    "base_rate": 0.13770180436847104,
+    "persistence_PR_AUC": 0.3734085256177421
+  },
+  "per_regime_PR_AUC": {
+    "Humid-Transition": {
+      "PR_AUC": 0.369,
+      "n": 398,
+      "n_pos": 72
+    },
+    "Stagnant-Trapping": {
+      "PR_AUC": 0.388,
+      "n": 211,
+      "n_pos": 30
+    },
+    "Ventilated-Stormy": {
+      "PR_AUC": 0.245,
+      "n": 171,
+      "n_pos": 14
+    },
+    "Monsoon-Wet-Windy": {
+      "PR_AUC": 0.206,
+      "n": 165,
+      "n_pos": 14
+    },
+    "Dry-Sunny-Photochemical": {
+      "PR_AUC": 0.583,
+      "n": 108,
+      "n_pos": 15
+    }
+  },
+  "lead_times": {
+    "24h": 0.348,
+    "48h": 0.274,
+    "72h": 0.249
+  },
+  "LOSO": {
+    "mean_PR_AUC": 0.298,
+    "std": 0.123,
+    "folds": 9
+  },
+  "top_features": {
+    "O3_8h": 0.1022,
+    "O3_lag1": 0.0721,
+    "PM2.5_ugm3": 0.067,
+    "O3_lag3": 0.0504,
+    "O3_lag7": 0.0451,
+    "surface_pressure_hPa": 0.0448,
+    "RH_pct": 0.0438,
+    "PM10_ugm3": 0.0425,
+    "geopotential_height_500hPa": 0.0411,
+    "doy_sin": 0.0385,
+    "doy_cos": 0.0366,
+    "wind_speed_u_ms": 0.0342
+  }
+}

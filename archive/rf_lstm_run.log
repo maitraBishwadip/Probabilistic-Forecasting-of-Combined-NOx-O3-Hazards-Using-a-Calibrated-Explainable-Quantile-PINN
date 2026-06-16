@@ -1,0 +1,3 @@
+samples: (4823, 14, 29) tab: (4823, 34) pos y24: 0.088
+RF done: PR-AUC 0.348
+PureLSTM done: PR-AUC 0.276

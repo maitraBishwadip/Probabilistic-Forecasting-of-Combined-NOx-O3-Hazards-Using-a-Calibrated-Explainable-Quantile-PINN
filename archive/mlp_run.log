@@ -1,0 +1,137 @@
+sequences: (4823, 14, 29) | pos rate y24: 0.088
+{
+  "MLP_PINN": {
+    "PR_AUC": 0.4205073250400917,
+    "ROC_AUC": 0.8123803736898071,
+    "Brier": 0.1058778315782547,
+    "base": 0.13770180436847104,
+    "n": 1053,
+    "n_pos": 145,
+    "PR_AUC_CI95": [
+      0.34,
+      0.496
+    ],
+    "F1_test": 0.3377777777777778,
+    "thr_star": 0.5659888386726379,
+    "recall_at_prec0.3": 0.7241379310344828,
+    "Brier_calibrated": 0.11204163730144501
+  },
+  "reference": {
+    "base_rate": 0.13770180436847104,
+    "persistence_PR_AUC": 0.3734085256177421
+  },
+  "ablation": {
+    "MLP_PINN(full)": {
+      "PR_AUC": 0.421,
+      "ROC_AUC": 0.812
+    },
+    "with_LSTM_encoder": {
+      "PR_AUC": 0.354,
+      "ROC_AUC": 0.747
+    },
+    "no_physics": {
+      "PR_AUC": 0.396,
+      "ROC_AUC": 0.787
+    },
+    "no_regime_lift(independence)": {
+      "PR_AUC": 0.456,
+      "ROC_AUC": 0.816
+    },
+    "no_regime_params": {
+      "PR_AUC": 0.395,
+      "ROC_AUC": 0.779
+    }
+  },
+  "lead_times": {
+    "24h": 0.421,
+    "48h": 0.234,
+    "72h": 0.26
+  },
+  "per_regime_PR_AUC": {
+    "Humid-Transition": {
+      "PR_AUC": 0.439,
+      "n": 398,
+      "n_pos": 72
+    },
+    "Stagnant-Trapping": {
+      "PR_AUC": 0.334,
+      "n": 211,
+      "n_pos": 30
+    },
+    "Ventilated-Stormy": {
+      "PR_AUC": 0.234,
+      "n": 171,
+      "n_pos": 14
+    },
+    "Monsoon-Wet-Windy": {
+      "PR_AUC": 0.582,
+      "n": 165,
+      "n_pos": 14
+    },
+    "Dry-Sunny-Photochemical": {
+      "PR_AUC": 0.633,
+      "n": 108,
+      "n_pos": 15
+    }
+  },
+  "learned_regime_lift": {
+    "Humid-Transition": 1.073,
+    "Stagnant-Trapping": 0.918,
+    "Ventilated-Stormy": 1.072,
+    "Monsoon-Wet-Windy": 1.054,
+    "Dry-Sunny-Photochemical": 0.834
+  },
+  "learned_physics_by_regime": {
+    "Humid-Transition": {
+      "dilution_a": 0.503,
+      "wet_b": 0.708,
+      "base_loss_d": 0.474,
+      "o3_prod_p": 0.205,
+      "pm_emit_q": 0.335
+    },
+    "Stagnant-Trapping": {
+      "dilution_a": 0.402,
+      "wet_b": 0.809,
+      "base_loss_d": 0.546,
+      "o3_prod_p": 0.328,
+      "pm_emit_q": 0.553
+    },
+    "Ventilated-Stormy": {
+      "dilution_a": 0.479,
+      "wet_b": 0.7,
+      "base_loss_d": 0.514,
+      "o3_prod_p": 0.195,
+      "pm_emit_q": 0.271
+    },
+    "Monsoon-Wet-Windy": {
+      "dilution_a": 0.545,
+      "wet_b": 0.652,
+      "base_loss_d": 0.458,
+      "o3_prod_p": 0.335,
+      "pm_emit_q": 0.337
+    },
+    "Dry-Sunny-Photochemical": {
+      "dilution_a": 0.408,
+      "wet_b": 0.696,
+      "base_loss_d": 0.412,
+      "o3_prod_p": 0.219,
+      "pm_emit_q": 0.423
+    }
+  },
+  "LOSO": {
+    "mean_PR_AUC": 0.329,
+    "std": 0.136,
+    "folds": 9,
+    "per_fold": [
+      0.469,
+      0.161,
+      0.526,
+      0.336,
+      0.144,
+      0.4,
+      0.282,
+      0.46,
+      0.183
+    ]
+  }
+}

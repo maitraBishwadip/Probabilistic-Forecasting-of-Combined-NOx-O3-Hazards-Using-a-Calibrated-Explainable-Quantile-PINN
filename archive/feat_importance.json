@@ -1,0 +1,17 @@
+{
+  "pm_ex_today": 0.1549,
+  "o3_ex_today": 0.1349,
+  "compound_today": 0.0242,
+  "O3_8h": 0.0181,
+  "CO_ppm": 0.0138,
+  "RH_pct": 0.0103,
+  "O3_8h_roll7": 0.0098,
+  "boundary_layer_height_m_lag1": 0.0085,
+  "PM2.5_ugm3": 0.0075,
+  "wind_speed_ms": 0.0069,
+  "ventilation_coefficient_lag1": 0.0051,
+  "PM2.5_ugm3_lag2": 0.005,
+  "geopotential_height_1000hPa": 0.0049,
+  "O3_8h_lag1": 0.0042,
+  "o3_n": 0.0019
+}

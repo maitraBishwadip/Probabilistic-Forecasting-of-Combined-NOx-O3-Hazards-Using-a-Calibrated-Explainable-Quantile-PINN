@@ -1,0 +1,37 @@
+{
+  "index_robust_dominance": {
+    "var_share_NOx": 0.44096118211746216,
+    "var_share_O3": 0.7284764647483826,
+    "var_share_cov": -0.16943764686584473,
+    "corr_H_NOx": 0.5364699589308574,
+    "corr_H_O3": 0.7542487981508857
+  },
+  "index_rank_dominance": {
+    "var_share_NOx": 0.6095896363258362,
+    "var_share_O3": 0.6334475874900818,
+    "var_share_cov": -0.24303722381591797,
+    "corr_H_NOx": 0.6251212177534955,
+    "corr_H_O3": 0.6432123274178104
+  },
+  "thr_rank": 0.3948049545288086,
+  "metrics_rank_target": {
+    "pinball": 0.19702503085136414,
+    "crps": 0.043782398104667664,
+    "picp80": 0.7083472069256973,
+    "width80": 0.1710728257894516,
+    "picp90": 0.8430704607740184,
+    "width90": 0.23999670147895813,
+    "brier_exceed": 0.0972448120498433,
+    "test_base_rate_extreme": 0.8342964808032169
+  },
+  "prediction_dominance_rank": {
+    "pred_corr_NOx": 0.34808851695973314,
+    "pred_corr_O3": 0.6294950675059168,
+    "dominant": "O3"
+  },
+  "prediction_dominance_robust_E3": {
+    "pred_corr_NOx": 0.116,
+    "pred_corr_O3": 0.898,
+    "dominant": "O3"
+  }
+}

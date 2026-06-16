@@ -1,0 +1,39 @@
+rank thr=0.3948; CDF grids ready
+train=86037 test=31067
+
+== PHYSICS-FORCED (ODE decoder, sunlight-driven) ==
+  [PHYS] ep 1/12 loss=0.9585 (53s)
+  [PHYS] ep 2/12 loss=0.9282 (52s)
+  [PHYS] ep 3/12 loss=0.9158 (46s)
+  [PHYS] ep 4/12 loss=0.9012 (49s)
+  [PHYS] ep 5/12 loss=0.8570 (55s)
+  [PHYS] ep 6/12 loss=0.8188 (64s)
+  [PHYS] ep 7/12 loss=0.7880 (51s)
+  [PHYS] ep 8/12 loss=0.7543 (48s)
+  [PHYS] ep 9/12 loss=0.7266 (49s)
+  [PHYS] ep 10/12 loss=0.6931 (47s)
+  [PHYS] ep 11/12 loss=0.6604 (46s)
+  [PHYS] ep 12/12 loss=0.6146 (52s)
+
+== NO-PHYSICS ablation (free MLP median) ==
+  [FREE] ep 1/12 loss=0.0273 (30s)
+  [FREE] ep 2/12 loss=0.0202 (31s)
+  [FREE] ep 3/12 loss=0.0190 (31s)
+  [FREE] ep 4/12 loss=0.0184 (30s)
+  [FREE] ep 5/12 loss=0.0179 (30s)
+  [FREE] ep 6/12 loss=0.0176 (31s)
+  [FREE] ep 7/12 loss=0.0173 (32s)
+  [FREE] ep 8/12 loss=0.0171 (29s)
+  [FREE] ep 9/12 loss=0.0170 (33s)
+  [FREE] ep 10/12 loss=0.0167 (29s)
+  [FREE] ep 11/12 loss=0.0166 (29s)
+  [FREE] ep 12/12 loss=0.0164 (26s)
+saved figs/e9_physics.png
+
+=============== E9 (test 2016, rank index) ===============
+physics : pinball=0.3479 crps=0.0773 picp80=0.790 picp90=0.862 brier=0.2123
+free    : pinball=0.2104 crps=0.0467 picp80=0.662 picp90=0.775 brier=0.1026
+delta (phys-free): pinball=+0.1375 crps=+0.0306 brier=+0.1097
+learned theta (softplus>0): {'prod': 2.103, 'titr': 0.362, 'depO': 0.371, 'dil': 0.127, 'wet': 0.088, 'emis': 2.237, 'conv': 0.075}
+
+Wrote results_e9.json and appended E9-20260616-093019 to RESULTS_LOG.md (physics WORSE)

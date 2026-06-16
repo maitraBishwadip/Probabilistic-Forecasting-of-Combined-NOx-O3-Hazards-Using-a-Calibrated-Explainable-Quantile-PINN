@@ -1,0 +1,137 @@
+{
+  "policy": "no imputation of pollutants or target; mask+zero for missing inputs only",
+  "qc_range_to_nan": {
+    "NO_ppb": 0,
+    "NO2_ppb": 0,
+    "NOx_ppb": 0,
+    "O3_ppb": 0
+  },
+  "qc_flatline_to_nan": {
+    "NO_ppb": 0,
+    "NO2_ppb": 0,
+    "NOx_ppb": 0,
+    "O3_ppb": 0
+  },
+  "stations": [
+    "AGRABAD",
+    "BARC",
+    "BARISHAL",
+    "DARUS SALAM",
+    "GAZIPUR",
+    "KHULNA",
+    "NARAYANGANJ",
+    "RAJSHAHI",
+    "SYLHET"
+  ],
+  "hours_per_station": 26304,
+  "robust_scaler": {
+    "NO_ppb": {
+      "median": 7.53,
+      "iqr": 34.26
+    },
+    "NO2_ppb": {
+      "median": 9.37,
+      "iqr": 17.6
+    },
+    "NOx_ppb": {
+      "median": 16.27,
+      "iqr": 49.68
+    },
+    "O3_ppb": {
+      "median": 3.69,
+      "iqr": 7.250000000000001
+    },
+    "modis_aod_550nm": {
+      "median": 0.6733252350000001,
+      "iqr": 0.54828667
+    }
+  },
+  "standard_scaler": {
+    "temp_C": {
+      "mean": 25.270162795314672,
+      "std": 4.804279467765077
+    },
+    "RH_pct": {
+      "mean": 77.93007080934419,
+      "std": 16.408560510867343
+    },
+    "wind_speed_ms": {
+      "mean": 8.462246045926808,
+      "std": 4.73363132556654
+    },
+    "wind_speed_u_ms": {
+      "mean": 0.049787936122175906,
+      "std": 1.5489822596529805
+    },
+    "wind_speed_v_ms": {
+      "mean": -0.6262926984792866,
+      "std": 2.1119472002920223
+    },
+    "solar_rad_Wm2": {
+      "mean": 199.098120574416,
+      "std": 266.564543207883
+    },
+    "precip_mm": {
+      "mean": 0.24554959962940903,
+      "std": 0.8632674979315025
+    },
+    "surface_pressure_hPa": {
+      "mean": 1007.5808682416782,
+      "std": 5.946491116761647
+    },
+    "boundary_layer_height_m": {
+      "mean": 450.4177089537423,
+      "std": 419.97152351703915
+    },
+    "ventilation_coefficient": {
+      "mean": 1238.321285450686,
+      "std": 1470.0094908475196
+    },
+    "photochemical_activitiy_index": {
+      "mean": 5672.88289127126,
+      "std": 7938.634985359636
+    }
+  },
+  "H_threshold_Q30_train": -0.046949719584652105,
+  "train_frac_extreme_by_construction": 0.6999988447720158,
+  "F": 26,
+  "feat_names": [
+    "NO_ppb",
+    "NO_ppb_mask",
+    "NO2_ppb",
+    "NO2_ppb_mask",
+    "NOx_ppb",
+    "NOx_ppb_mask",
+    "O3_ppb",
+    "O3_ppb_mask",
+    "temp_C",
+    "RH_pct",
+    "wind_speed_ms",
+    "wind_speed_u_ms",
+    "wind_speed_v_ms",
+    "solar_rad_Wm2",
+    "precip_mm",
+    "surface_pressure_hPa",
+    "boundary_layer_height_m",
+    "ventilation_coefficient",
+    "photochemical_activitiy_index",
+    "modis_aod_550nm",
+    "modis_aod_550nm_mask",
+    "hour_sin",
+    "hour_cos",
+    "doy_sin",
+    "doy_cos",
+    "weekday"
+  ],
+  "phys_cols": [
+    "ventilation_coefficient",
+    "boundary_layer_height_m",
+    "photochemical_activitiy_index",
+    "precip_mm",
+    "temp_C"
+  ],
+  "T": 26304,
+  "n_H_overall": 117786,
+  "n_H_train": 86563,
+  "n_H_test2016": 31223
+}

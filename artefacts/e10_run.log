@@ -1,0 +1,76 @@
+rank thr=0.3948; CDF grids ready (S=9 T=26304 F=26)
+train=86037 test=31067
+
+== FREE ==
+  [free    ] ep 1/10 loss=0.0273 (27s)
+  [free    ] ep 2/10 loss=0.0202 (32s)
+  [free    ] ep 3/10 loss=0.0190 (29s)
+  [free    ] ep 4/10 loss=0.0184 (28s)
+  [free    ] ep 5/10 loss=0.0179 (30s)
+  [free    ] ep 6/10 loss=0.0176 (28s)
+  [free    ] ep 7/10 loss=0.0173 (30s)
+  [free    ] ep 8/10 loss=0.0171 (31s)
+  [free    ] ep 9/10 loss=0.0170 (31s)
+  [free    ] ep 10/10 loss=0.0167 (26s)
+   free: {'pinball': 0.20990778505802155, 'crps': 0.04664485529065132, 'picp80': 0.6794703916194964, 'picp90': 0.7877340368311861, 'brier_exceed': 0.10045171868022049}
+
+== PHYSONLY ==
+  [physonly] ep 1/10 loss=0.1593 (44s)
+  [physonly] ep 2/10 loss=0.2086 (49s)
+  [physonly] ep 3/10 loss=0.2626 (47s)
+  [physonly] ep 4/10 loss=0.3064 (52s)
+  [physonly] ep 5/10 loss=0.2861 (46s)
+  [physonly] ep 6/10 loss=0.2763 (45s)
+  [physonly] ep 7/10 loss=0.2641 (55s)
+  [physonly] ep 8/10 loss=0.2565 (52s)
+  [physonly] ep 9/10 loss=0.2494 (61s)
+  [physonly] ep 10/10 loss=0.2442 (66s)
+   physonly: {'pinball': 0.3174222707748413, 'crps': 0.07053667306900024, 'picp80': 0.6703634454319596, 'picp90': 0.7716940296596061, 'brier_exceed': 0.13696554533190716}
+
+== HYBRID ==
+  [hybrid  ] ep 1/10 loss=0.1528 (78s)
+  [hybrid  ] ep 2/10 loss=0.2042 (75s)
+  [hybrid  ] ep 3/10 loss=0.2590 (68s)
+  [hybrid  ] ep 4/10 loss=0.3094 (63s)
+  [hybrid  ] ep 5/10 loss=0.2858 (55s)
+  [hybrid  ] ep 6/10 loss=0.2771 (51s)
+  [hybrid  ] ep 7/10 loss=0.2618 (49s)
+  [hybrid  ] ep 8/10 loss=0.2518 (53s)
+  [hybrid  ] ep 9/10 loss=0.2448 (51s)
+  [hybrid  ] ep 10/10 loss=0.2391 (57s)
+   hybrid: {'pinball': 0.25248003005981445, 'crps': 0.05610508471727371, 'picp80': 0.7109372999001101, 'picp90': 0.8261628204799836, 'brier_exceed': 0.11966448957546544}
+
+== seed 1 (free, hybrid) ==
+  [free    ] ep 1/10 loss=0.0273 (28s)
+  [free    ] ep 2/10 loss=0.0201 (29s)
+  [free    ] ep 3/10 loss=0.0191 (29s)
+  [free    ] ep 4/10 loss=0.0184 (28s)
+  [free    ] ep 5/10 loss=0.0180 (27s)
+  [free    ] ep 6/10 loss=0.0177 (29s)
+  [free    ] ep 7/10 loss=0.0174 (30s)
+  [free    ] ep 8/10 loss=0.0172 (31s)
+  [free    ] ep 9/10 loss=0.0170 (31s)
+  [free    ] ep 10/10 loss=0.0168 (32s)
+   seed1 free: {'pinball': 0.19509752094745636, 'crps': 0.04335404187440872, 'picp80': 0.6986047434879492, 'picp90': 0.8108207617242528, 'brier_exceed': 0.09599927145873695}
+  [hybrid  ] ep 1/10 loss=0.1545 (54s)
+  [hybrid  ] ep 2/10 loss=0.1987 (52s)
+  [hybrid  ] ep 3/10 loss=0.2502 (48s)
+  [hybrid  ] ep 4/10 loss=0.2958 (44s)
+  [hybrid  ] ep 5/10 loss=0.2753 (39s)
+  [hybrid  ] ep 6/10 loss=0.2595 (39s)
+  [hybrid  ] ep 7/10 loss=0.2543 (39s)
+  [hybrid  ] ep 8/10 loss=0.2480 (39s)
+  [hybrid  ] ep 9/10 loss=0.2413 (48s)
+  [hybrid  ] ep 10/10 loss=0.2336 (58s)
+   seed1 hybrid: {'pinball': 0.2597842812538147, 'crps': 0.05772879347205162, 'picp80': 0.6711638449914197, 'picp90': 0.7950016648310837, 'brier_exceed': 0.12001947750740746}
+saved figs/e10_physics.png
+
+=============== E10 (test 2016, rank index, seed 0) ===============
+free     : pinball=0.2099 crps=0.0466 picp80=0.679 picp90=0.788 brier=0.1005
+hybrid   : pinball=0.2525 crps=0.0561 picp80=0.711 picp90=0.826 brier=0.1197
+physonly : pinball=0.3174 crps=0.0705 picp80=0.670 picp90=0.772 brier=0.1370
+delta (hybrid-free): pinball=+0.0426 crps=+0.0095 brier=+0.0192
+delta (physonly-free): pinball=+0.1075 crps=+0.0239 brier=+0.0365
+learned global rates: {'photolysis_kj': 0.3524, 'titration_ktit0': 0.057, 'arrhenius_Ea': 0.0938, 'dep_NO': 0.0337, 'dep_NO2': 0.0273, 'dep_O3': 0.0205, 'dilution_VC': 0.0186, 'wet_scav': 0.0111, 'Ox_production': 0.5218, 'emission_base': 0.5323, 'resid_scale_cap': 0.3406}
+
+Wrote results_e10.json and appended E10-20260616-104625 to RESULTS_LOG.md (physics WORSE)

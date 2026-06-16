@@ -1,0 +1,99 @@
+{
+  "raw_rows": 214452,
+  "qc_range_removed": {
+    "SO2_ppb": 0,
+    "NO_ppb": 0,
+    "NO2_ppb": 0,
+    "NOx_ppb": 0,
+    "CO_ppm": 0,
+    "O3_ppb": 0,
+    "PM2.5_ugm3": 0,
+    "PM10_ugm3": 0,
+    "temp_C": 0,
+    "RH_pct": 0,
+    "wind_speed_ms": 0,
+    "solar_rad_Wm2": 0,
+    "precip_mm": 0,
+    "surface_pressure_hPa": 0,
+    "boundary_layer_height_m": 0
+  },
+  "qc_flatline_removed": {
+    "PM2.5_ugm3": 0,
+    "O3_ppb": 0,
+    "NO2_ppb": 0,
+    "NOx_ppb": 0,
+    "CO_ppm": 0,
+    "SO2_ppb": 0,
+    "PM10_ugm3": 0
+  },
+  "station_days": 9864,
+  "regime_names": {
+    "0": "Humid-Transition",
+    "1": "Stagnant-Trapping",
+    "2": "Ventilated-Stormy",
+    "3": "Monsoon-Wet-Windy",
+    "4": "Dry-Sunny-Photochemical"
+  },
+  "regime_lift_table": [
+    {
+      "regime": "Ventilated-Stormy",
+      "n_days": 504,
+      "RH": 83.0,
+      "solar": 202.0,
+      "photochem": 6191.0,
+      "ventilation": 3257.0,
+      "compound_pct": 3.4,
+      "lift": 1.63
+    },
+    {
+      "regime": "Monsoon-Wet-Windy",
+      "n_days": 510,
+      "RH": 90.0,
+      "solar": 105.0,
+      "photochem": 2941.0,
+      "ventilation": 1265.0,
+      "compound_pct": 5.5,
+      "lift": 1.55
+    },
+    {
+      "regime": "Humid-Transition",
+      "n_days": 1415,
+      "RH": 83.0,
+      "solar": 212.0,
+      "photochem": 6339.0,
+      "ventilation": 862.0,
+      "compound_pct": 8.7,
+      "lift": 1.35
+    },
+    {
+      "regime": "Dry-Sunny-Photochemical",
+      "n_days": 568,
+      "RH": 64.0,
+      "solar": 280.0,
+      "photochem": 8842.0,
+      "ventilation": 1570.0,
+      "compound_pct": 18.0,
+      "lift": 1.16
+    },
+    {
+      "regime": "Stagnant-Trapping",
+      "n_days": 1908,
+      "RH": 74.0,
+      "solar": 187.0,
+      "photochem": 4602.0,
+      "ventilation": 618.0,
+      "compound_pct": 8.6,
+      "lift": 1.06
+    }
+  ],
+  "compound_rate_overall_pct": 8.85,
+  "n_compound_days": 434,
+  "compound_by_season_pct": {
+    "mon": 11.3,
+    "post": 8.4,
+    "pre": 9.1,
+    "winter": 6.3
+  },
+  "n_model_rows_y24": 4899,
+  "pos_rate_y24_pct": 8.84
+}
