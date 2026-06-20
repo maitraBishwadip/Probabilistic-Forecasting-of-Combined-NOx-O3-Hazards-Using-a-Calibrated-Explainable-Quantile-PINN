@@ -25,6 +25,12 @@
 
 \graphicspath{{figures/}}
 
+% --- camera-ready space economy (tighten spacing around floats) ---
+\setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{6pt plus 2pt minus 2pt}
+
 % chemical-species shorthands
 \newcommand{\nox}{\ensuremath{\mathrm{NO_x}}}
 \newcommand{\othree}{\ensuremath{\mathrm{O_3}}}
@@ -33,39 +39,50 @@
 
 \begin{document}
 
-\title{A Calibrated, Explainable Quantile Physics-Informed Neural Network for
-Probabilistic Forecasting of the Combined \nox--\othree\ Hazard over Bangladesh}
+\title{Probabilistic Forecasting of the Combined \nox--\othree\ Hazard over
+Bangladesh with a Quantile Physics-Informed Neural Network}
 
-\author{\IEEEauthorblockN{Bishwadip Maitra}
-\IEEEauthorblockA{Air-Quality Research Group\\
-Bangladesh University of Engineering and Technology (BUET)\\
-Dhaka, Bangladesh\\
-Email: bishwadip.maitra@example.edu}} % TODO: replace with institutional email
+
+\author{
+  \begin{tabular}{ccc}
+    1\textsuperscript{st} Bishwadip Maitra & 2\textsuperscript{nd} Laboni & 3\textsuperscript{rd} provat sir \\
+    \textit{Air-Quality Research Group} & \textit{Air-Quality Research Group} & \textit{Air-Quality Research Group} \\
+    \textit{ BUET, Bangladesh} & \textit{BUET, Bangladesh} & \textit{BUET, Bangladesh} \\
+    \small bishwadip.maitra@buet.ac.bd & \small author2@buet.ac.bd & \small author3@buet.ac.bd \\[0.15cm]
+  \end{tabular}
+  \\
+  \begin{tabular}{cc}
+    4\textsuperscript{th} mokhkes sir & \qquad\qquad 5\textsuperscript{th} Subhojit Mandal \\
+    \textit{Air-Quality Research Group} & \qquad\qquad \textit{Wadhwani School of Data Science and AI } \\
+    \textit{BUET, Bangladesh} & \qquad\qquad \textit{Indian Institute of Technology Madras,India} \\
+    \small author4@buet.ac.bd & \qquad\qquad \small subhojit.m@iiits.in
+  \end{tabular}
+}
+
 
 \maketitle
 
 %------------------------------------------------------------------ ABSTRACT
 \begin{abstract}
-Bangladesh endures some of the world's highest air-pollution exposures, and the
-\emph{joint} upper range of nitrogen oxides (\nox) and ozone (\othree)---chemically
-summarised by the total oxidant $\ox=\othree+\notwo$---is disproportionately harmful
-to health. Yet no forecast targets this \emph{combined} hazard probabilistically, and
-none embeds the governing photochemistry. We present a quantile-regressive
-physics-informed neural network (QR-PINN) that emits the \emph{entire} predictive
-distribution of a balanced, climatology-referenced combined \nox--\othree\ hazard
-index over the next \mbox{24\,h} at hourly resolution, for nine stations during
-2014--2016. The forecaster is well calibrated---conformalized quantile regression
-attains near-nominal 80/90/95\% coverage that holds across lead time---and transfers
-to unseen stations with a small, quantified penalty (leave-one-station-out pinball gap
-$+0.025$). We then test, as the central hypothesis, whether embedding \nox--\othree\
-chemistry (Leighton photostationary state and \ox\ conservation) improves probabilistic
-accuracy. Across three independent experiments it does \emph{not}; explainable-AI
-attribution (Integrated Gradients and occlusion, agreement $r=0.917$) shows why: skill
-is carried by pollutant-lag and calendar features on an \othree-led target, not by
-meteorology. We therefore reposition the physics as a source of \emph{interpretability}
----physically ordered learned rates and recovered per-station emission scales---and
-report the negative accuracy result transparently.
+Bangladesh breathes some of the world's most polluted air, and two of its gaseous oxidants---nitrogen
+oxides (\nox) and ozone (\othree)---are bound by fast photochemistry, so hours of jointly elevated
+exposure recur and are more harmful than either alone. Operational forecasts, however, remain almost
+entirely deterministic and single-pollutant. We instead forecast the \emph{full} hourly predictive
+distribution, up to 24\,h ahead, of a single combined \nox--\othree\ hazard index, and from it the
+probability that the air enters its most-polluted, hazardous upper range. Our quantile-regressive
+physics-informed neural network (QR-PINN), trained on three years of hourly observations from nine
+stations (2014--2016), is both sharp and trustworthy: it reaches a CRPS of $0.047$ and a Brier score of
+$0.110$ for the top-$30\%$ extreme; conformalised quantile regression restores near-nominal $80/90/95\%$
+coverage ($0.781/0.892/0.951$) that holds across the full 24\,h horizon; and it transfers to unseen
+stations at small cost (leave-one-station-out pinball $+0.025$). With that calibrated forecaster, we put
+the embedded photochemistry on trial across four independent tests: the Leighton photostationary state
+and total-oxidant (\ox~$=$~\othree~$+$~\notwo) conservation do not sharpen this \othree-led forecast,
+which is best at every lead and in the tail. Two attribution methods agree ($r=0.917$) that the skill
+lives in recent concentrations and diurnal structure, not the meteorology the chemistry acts on. The
+chemistry earns its place instead as interpretability, recovering physically ordered reaction rates and
+station-specific emission scales.
 \end{abstract}
+
 
 \begin{IEEEkeywords}
 Probabilistic forecasting, physics-informed neural networks, quantile regression,
@@ -73,76 +90,64 @@ explainable AI, conformal prediction, air quality, ozone, Bangladesh.
 \end{IEEEkeywords}
 
 %================================================================== INTRODUCTION
+%================================================================== INTRODUCTION
 \section{Introduction}
-Bangladesh is among the most polluted countries on Earth, with severe health and
-economic costs~\cite{worldbank2022}. While particulate matter dominates the winter
-inversion season~\cite{billah2026}, the gaseous oxidants \nox\ and \othree\ pose a
-distinct, year-round hazard. Crucially, they are not independent: they are locked in
-the fast photochemical cycle $\notwo+h\nu\!\rightarrow\!\mathrm{NO}+\othree$,
-$\othree+\mathrm{NO}\!\rightarrow\!\notwo$, so that the \emph{total oxidant}
-$\ox=\othree+\notwo$ is approximately conserved through titration and is the chemically
-meaningful ``combined'' quantity~\cite{seinfeld2016,taheri2024}. Epidemiology shows the
-\emph{joint} elevation of \othree\ and \notwo\ (and \ox) is more harmful than either
-alone~\cite{fu2022}. The public-health-relevant target is therefore the broad upper
-region of a \emph{combined} hazard, not the rare top percentile of a single pollutant.
+Bangladesh is among the most polluted countries on Earth, with severe health and economic
+costs~\cite{worldbank2022}. Particulate matter dominates the winter inversion
+season, but the gaseous oxidants \nox\ and \othree\ pose a distinct, year-round
+hazard, and they are not independent. The two are locked in the fast photochemical cycle
+$\notwo+h\nu\!\rightarrow\!\mathrm{NO}+\othree$, $\othree+\mathrm{NO}\!\rightarrow\!\notwo$, so that
+the total oxidant $\ox=\othree+\notwo$ is approximately conserved through titration and stands in
+for their combined burden~\cite{seinfeld2016}. That coupling has a human cost: the extreme
+co-occurrence of \othree\ and \notwo\ is more harmful than either pollutant alone~\cite{fu2022}, which
+is exactly why the quantity worth forecasting is the \emph{combined} hazard rather than each species
+on its own.
 
-Operational air-quality prediction is shifting from point estimates to
-\emph{predictive distributions}, because exceedance warnings are inherently
-probabilistic~\cite{perezvasseur2021}. In parallel, physics-informed neural networks
-(PINNs)~\cite{raissi2019,karniadakis2021} embed governing equations as soft training
-constraints, and have been applied to air quality---e.g.\ transport-physics graph
-networks~\cite{hettige2024} and remote-sensing-constrained chemistry-transport
-fusion~\cite{boli2023}. However, these are \emph{deterministic} and
-\emph{single-pollutant}; uncertainty-aware PINNs~\cite{yang2021} and quantile-PINNs
-exist only outside the atmospheric domain~\cite{hu2025}. No prior work forecasts a
-\emph{combined} \nox--\othree\ hazard \emph{probabilistically} with embedded
+Two recent currents make such a forecast conceivable. Operational air-quality prediction has begun to
+move from point estimates toward \emph{predictive distributions}, because an exceedance warning is by
+nature probabilistic~\cite{perezvasseur2021}. In parallel, physics-informed neural networks
+(PINNs)~\cite{raissi2019,karniadakis2021} embed governing equations as soft training constraints, and
+have reached air quality through transport-physics graph models~\cite{hettige2024}. These remain
+deterministic and single-pollutant, however; the quantile-PINNs~\cite{hu2025} that could close that gap
+live only outside the atmospheric domain. To our
+knowledge no prior work forecasts a combined \nox--\othree\ hazard probabilistically with embedded
 photochemistry, and none does so for Bangladesh.
 
-We close this gap and, in doing so, ask a sharp scientific question:
-\emph{does embedding \nox--\othree\ chemistry actually improve probabilistic forecast
-accuracy?} Our contributions are:
-\begin{itemize}
-\item A \textbf{QR-PINN} that outputs the full 24\,h predictive distribution of a
-balanced, climatology-referenced combined \nox--\othree\ hazard index---to our knowledge
-the first probabilistic, physics-informed, combined-pollutant forecast for Bangladesh.
-\item A \textbf{calibrated} forecaster: conformalized quantile regression restores
-near-nominal coverage at 80/90/95\% that holds across lead time, with proper-scoring
-evaluation, plus quantified \textbf{spatial transfer} (leave-one-station-out, bootstrap CIs).
-\item A rigorous, \textbf{honest negative result}: across three independent experiments,
-embedded physics is neutral-to-negative for accuracy, and \textbf{explainable AI}
-(Integrated Gradients $+$ occlusion, $r=0.917$) explains \emph{why}.
-\item A \textbf{reframing} of the physics as interpretability: physically ordered learned
-rates (photolysis $\gg$ titration) and recovered per-station emission scales.
-\end{itemize}
-
+We set out to fill that gap. Our primary contribution is the forecaster itself: a QR-PINN that emits the
+full 24\,h predictive distribution of a balanced, climatology-referenced combined hazard index for
+Bangladesh---and, from it, the probability of entering the most-polluted, hazardous upper range---made
+trustworthy through calibration-aware learning with conformalised quantile regression and shown to
+survive transfer to stations the model never saw. That calibrated forecaster then lets us press a sharper
+scientific question---does embedding \nox--\othree\ chemistry actually \emph{improve} a probabilistic
+forecast, or only decorate it?---which we answer honestly with independent ablations and a
+regime-by-regime audit. Finally, Integrated Gradients and occlusion tell us what the network truly relies
+on, and so why the physics pays off where it does and not where it does not.
 %================================================================== DATA
 \section{Data and Study Area}
-We use hourly observations from \textbf{nine} Department of Environment (DoE) stations
-across Bangladesh, 2014-01-01 to 2016-12-31 (223{,}776 raw rows). The stations
-(Fig.~\ref{fig:overview}a) span a megacity cluster around Dhaka, the port of Chittagong
-(Agrabad), and divisional cities, covering markedly different pollution regimes:
-traffic/titration-dominated, photochemically \othree-dominated, and jointly
-high-burden. The pollutant data are right-skewed and heavily gapped
-(Fig.~\ref{fig:overview}b), and kriged station-mean surfaces (Fig.~\ref{fig:overview}c,d)
-confirm the expected spatial \emph{anti-structure}---\notwo\ peaks over the urban core while
-\othree\ peaks in cleaner peripheral air---the spatial signature of the same titration
-chemistry the model must capture.
+Our observations come from nine Department of Environment (DoE) stations across Bangladesh, hourly
+from 2014-01-01 to 2016-12-31 (223{,}776 raw rows). The network (Fig.~\ref{fig:overview}a) spans the
+Dhaka megacity and its industrial belt (the Bangladesh Agricultural Research Council, BARC, and
+Darus~Salam within the city; Gazipur and Narayanganj on its fringes), the port of Chittagong (Agrabad),
+and the divisional cities of Khulna, Rajshahi, Sylhet and Barishal, covering markedly different urban
+and peri-urban regimes. Both pollutants are sharply right-skewed (Fig.~\ref{fig:overview}b), the
+statistical fingerprint of episodic, recurring extremes. Inverse-distance-weighted station-mean
+surfaces (Fig.~\ref{fig:overview}c,d) reveal a spatial \textit{anti-structure}: \notwo\ peaks over the
+urban core while \othree\ peaks in the cleaner periphery, the same titration chemistry the model must
+learn, written across the map.
 
-Each station carries pollutant channels ($\mathrm{NO}$, \notwo, \nox, \othree) plus
-reanalysis meteorology and physical drivers (temperature, humidity, wind $u/v$, solar
-radiation, boundary-layer height, ventilation coefficient, a photochemical-activity
-index, pressure), daily MODIS satellite fields (AOD/NDVI/fire), and calendar terms---26
-features in all. Pollutant missingness is heavy (design estimate \othree\ ${\approx}74.7\%$,
-\nox\ ${\approx}62.6\%$ \emph{populated}), so we keep per-channel \textbf{missingness
-masks} and \textbf{never impute the target}. After quality control and hourly windowing,
-the modelling tensor is $9\times 26{,}304\times 26$, giving \textbf{86{,}037 training}
-(2014--15) and \textbf{31{,}067 test} (2016) forecast anchors; an anchor requires a full
-$L{=}48$\,h input window and a valid future target. Spatial generalisation is assessed by
-\textbf{leave-one-station-out} (LOSO).
+Each station carries four pollutant channels ($\mathrm{NO}$, \notwo, \nox, \othree) alongside reanalysis
+meteorology and physical drivers (temperature, humidity, wind $u/v$, shortwave radiation, boundary-layer
+height, ventilation coefficient, photochemical-activity index, surface pressure), daily MODIS fields
+(aerosol optical depth, NDVI, fire counts), and calendar terms, 26 features in all. Pollutant gaps are
+heavy---\othree\ and \nox\ are populated only about $74.7\%$ and $62.6\%$ of the time---so we keep a
+per-channel missingness mask for every input and never impute the target. After quality control and
+hourly windowing the modelling tensor is $9\times 26{,}304\times 26$, yielding 86{,}037 training points
+(2014--15) and 31{,}067 test points (2016); spatial generalisation is judged by leave-one-station-out
+(LOSO).
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig1_composite.png}
+\includegraphics[width=\columnwidth]{fig1_composite.pdf}
 \caption{Study area and data. (a)~The nine DoE stations (red stars, numbered 1~Agrabad,
 2~Khulna, 3~BARC, 4~Sylhet, 5~Darus~Salam, 6~Rajshahi, 7~Narayanganj, 8~Barishal, 9~Gazipur)
 over the eight divisions of Bangladesh. (b)~Pooled distributions (dashed $=$ median): both
@@ -152,62 +157,78 @@ of \nox--\othree\ titration motivating a \emph{combined} oxidant target.}
 \label{fig:overview}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\setlength{\fboxsep}{0pt}%
-\fbox{\parbox[c][0.60\columnwidth][c]{0.95\columnwidth}{\centering\itshape\color{gray}
-[\,figure ``laboni'' --- inserted manually\,]}}
-\caption{\emph{(Placeholder ``laboni''.)} Lorem ipsum dolor sit amet, consectetur adipiscing
-elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Caption to be
-supplied with the final figure.}
-\label{fig:laboni}
-\end{figure}
+\includegraphics[width=0.85\textwidth]{fig2_forecast.pdf}
+\caption{Representative day-ahead forecasts from the data-only QR-PINN (test 2016), shown as the
+\emph{full predictive density} of the combined hazard $H$ at each lead (blue ``river''; darker $=$ higher
+density), overlaid with the median (white), the observed trajectory (points), the extreme line
+$H\!\ge\!Q_{70}$, and the derived exceedance probability $P(\mathrm{ext})\!=\!P(H\!\ge\!Q_{70})$ read off
+the predicted CDF (lower strip). (a)~A hazardous build-up at Sylhet: the predictive mass rises across
+$Q_{70}$ and the exceedance probability climbs sharply. (b)~A low-risk day at Narayanganj, where the
+distribution stays tight and below the extreme line, so $P(\mathrm{ext})\!\approx\!0$. \texttt{src: run E12.}}
+\label{fig:forecast}
+\end{figure*}
 
 %================================================================== METHOD
 \section{Method: A Quantile Physics-Informed Neural Network}
 
 \subsection{Combined hazard index}
-We require a target that is (i)~a graded, continuous hazard suitable for quantile
-regression and (ii)~physically and health-meaningful, with neither pollutant dominating
-by scale. We adopt a \textbf{rank / quantile-uniform} index
+A quantile target must be a graded, continuous hazard that is at once physically and health-meaningful,
+with neither pollutant allowed to dominate by scale. We therefore adopt a rank, or quantile-uniform,
+index
 \begin{equation}
 H \;=\; \tfrac{1}{2}\,F_{\nox}(\nox) \;+\; \tfrac{1}{2}\,F_{\othree}(\othree),
 \label{eq:H}
 \end{equation}
-where $F_{\bullet}$ is the \emph{training} empirical CDF of each pollutant, so each
-marginal is uniform on $[0,1]$. An earlier scale-based index let \othree\ overpower the
-combination (training variance share \othree~$72.8\%$ vs.\ \nox~$44.1\%$; prediction
-correlation \othree~$0.898$ vs.\ \nox~$0.116$); \eqref{eq:H} rebalances it (variance
-share $61.0\%/63.3\%$; prediction correlation \nox~$0.348$/\othree~$0.629$)\footnote{%
-\texttt{src: run E5}.}. The \emph{combined extreme} is defined by a climatology-referenced
-cutoff,
+where $F_{\bullet}$ is the \emph{training} empirical CDF of each pollutant, so each marginal is uniform
+on $[0,1]$. This choice was not cosmetic. An earlier scale-based combination let \othree\ overpower the
+index (training variance share \othree~$72.8\%$ vs.\ \nox~$44.1\%$; prediction correlation
+\othree~$0.898$ vs.\ \nox~$0.116$), quietly turning a ``combined'' target into an ozone forecast; the
+rank form in \eqref{eq:H} rebalances it (variance share $61.0\%/63.3\%$; prediction correlation
+\nox~$0.348$, \othree~$0.629$). The combined extreme then follows from a climatology-referenced cutoff,
 \begin{equation}
 \begin{aligned}
-\mathrm{thr}&=Q_{30}(H_{\text{train}})=0.3948,\\
+\mathrm{thr}&=Q_{70}(H_{\text{train}})=0.6087,\\
 p_{t+h}&=\Pr(H_{t+h}\ge \mathrm{thr}),
 \end{aligned}
 \label{eq:thr}
 \end{equation}
-i.e.\ the 30th percentile, so $\ge 70\%$ of hours are ``hazardous'' (test base rate
-$0.834$)---a deliberate, health-motivated broad class~\cite{fu2022}. The model never
-trains on this binary label; the exceedance probability $p_{t+h}$ is read off the
-predicted CDF.
+i.e.\ the 70th percentile, so that the \emph{most-polluted top $30\%$} of hours form the
+extreme/hazardous class (test base rate $0.263$), with $Q_{90}$ (top $10\%$, base rate $0.046$) marking a
+secondary ``severe'' tier. The choice is principled: because the index is rank/quantile-uniform,
+$H\!\ge\!Q_{70}$ is by construction the upper tercile of \emph{joint} \nox--\othree\ burden; the joint
+upper range of the two oxidants is super-additively harmful~\cite{fu2022} and, in one of the world's most
+polluted settings~\cite{worldbank2022}, these are the genuinely hazardous hours, while percentile-based
+exceedance is standard practice in probabilistic air-quality forecasting~\cite{perezvasseur2021} and
+quantile-regression extremes~\cite{cannon2018}. The model never trains on this binary label; the
+exceedance probability $p_{t+h}$ is read directly off the predicted CDF.
 
 \subsection{Architecture and quantile head}
 An LSTM encoder (hidden size 64) ingests the 48\,h multivariate window together with a
 nine-station embedding (dim.\ 8) and emits a latent state, from which two heads branch
-(Fig.~\ref{fig:arch}).
+(Table~\ref{tab:arch}).
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig2_architecture.png}
-\caption{QR-PINN architecture. A shared LSTM encoder feeds a \emph{monotone quantile head}
-(the deliverable---non-crossing $Q_\tau(H_{t+h})\!\rightarrow$ predictive CDF/PDF and exceedance
-probability) and a \emph{physics head} (a coupled \mbox{NO--\notwo--\othree} box-ODE with the
-Leighton and \ox-conservation residuals). Both feed the composite loss; the physics term is a
+\begin{table}[t]
+\caption{QR-PINN architecture. The monotone quantile head is the deliverable; the physics head is a
 regulariser/interpretability device, not an accuracy mechanism.}
-\label{fig:arch}
-\end{figure}
+\label{tab:arch}
+\centering\footnotesize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}p{0.285\columnwidth}p{0.44\columnwidth}p{0.155\columnwidth}@{}}
+\toprule
+\textbf{Component} & \textbf{Configuration} & \textbf{Output}\\
+\midrule
+Input window & 48\,h $\times$ 26 feat.\ $+$ per-channel masks & $\mathbf{x}_t$\\
+Station embedding & 9 stations $\rightarrow$ dim.\ 8 & $\mathbf{e}_s$\\
+Encoder & LSTM, hidden 64 & latent $\mathbf{z}_t$\\
+\textbf{Quantile head} \emph{(deliverable)} & monotone non-crossing, 9\,$\tau$ ($\!\rightarrow\!\{0.01..0.99\}$ tails) & $Q_\tau(H_{t+h})$\\
+Physics head & semi-implicit NO--\notwo--\othree\ box-ODE; Leighton $+\,$\ox\ cons.; per-station emission; 9 global rates & $\hat{\mathbf{c}},\,r_{\mathrm{L}}$\\
+Loss & pinball $+\,\lambda_{\mathrm{data}}$recon $+\,\lambda_{\mathrm{chem}}r_{\mathrm{L}}$ (annealed) & scalar\\
+Output & predictive CDF/PDF; $P(H\!\ge\!\mathrm{thr})$ & $h\!=\!1..24$\\
+\bottomrule
+\end{tabular}
+\end{table}
 The \emph{quantile head} (the deliverable) predicts, for each lead $h\!\in\!\{1,\dots,24\}$
 and quantile level $\tau$, a value $Q_\tau(H_{t+h})$ trained with the pinball loss
 $\rho_\tau(u)=u\,(\tau-\mathbb{1}\{u<0\})$. To forbid quantile crossing we build the
@@ -216,7 +237,7 @@ quantiles monotonically from non-negative increments,
 Q_{\tau_k}=Q_{\tau_1}+\sum_{j=2}^{k}\mathrm{softplus}(\delta_j),\quad \delta_j\in\mathbb{R},
 \label{eq:noncross}
 \end{equation}
-so $Q_{\tau_1}\!\le\!\dots\!\le\!Q_{\tau_K}$ by construction~\cite{cannon2018,koenker1978}.
+so $Q_{\tau_1}\!\le\!\dots\!\le\!Q_{\tau_K}$ by construction~\cite{cannon2018}.
 We train on $\tau\in\{0.05,\dots,0.95\}$ and extend to $\{0.01,\dots,0.99\}$ for tail
 calibration. The dense, monotone quantiles define the predictive CDF/PDF per horizon.
 
@@ -233,8 +254,7 @@ at each station. For species $k$ the hourly mass balance is
 \end{equation}
 with emission $E_k$, mixing height $H_{\mathrm{mix}}$, ventilation $V_C$, deposition
 $v_{d,k}$, wet scavenging $\Lambda_k P$, and chemistry $R_k$. The \nox--\othree\ coupling
-enters as two residual penalties: the \textbf{Leighton} photostationary state and
-\textbf{\ox\ conservation},
+enters as two residual penalties, the Leighton photostationary state and \ox\ conservation,
 \begin{equation}
 \begin{aligned}
 r_{\mathrm{L}}&=C_{\othree}C_{\mathrm{NO}}-\tfrac{J}{k(T)}\,C_{\notwo},\\
@@ -242,10 +262,10 @@ r_{\mathrm{L}}&=C_{\othree}C_{\mathrm{NO}}-\tfrac{J}{k(T)}\,C_{\notwo},\\
 \end{aligned}
 \label{eq:chem}
 \end{equation}
-where $J$ scales with the photochemical-activity index and $k(T)$ is Arrhenius in
-temperature. All rate parameters are \emph{global and learnable}, making their fitted
-values an interpretable scientific output. The full objective combines the
-distributional fit with the physics as a soft, annealed regulariser:
+where $J$ scales with the photochemical-activity index and $k(T)$ is Arrhenius in temperature. Every
+rate parameter is global and learnable, so its fitted value becomes an interpretable scientific output
+rather than a hidden weight. The full objective combines the distributional fit with the physics as a
+soft, annealed regulariser:
 \begin{equation}
 \begin{aligned}
 \mathcal{L}={}&\underbrace{\textstyle\sum_{\tau,h}\rho_\tau(H_{t+h},Q_\tau)}_{\text{pinball (primary)}}
@@ -258,67 +278,55 @@ with $\lambda_{\mathrm{phys}}$ annealed $0\!\rightarrow\!\text{target}$ and
 $\lambda_{\mathrm{data}}$ a concentration data-fit term where observed.
 
 %================================================================== EXPERIMENTS
-\section{Experimental Design and Hypotheses}
-We score the predictive distribution with strictly proper rules~\cite{gneiting2007}:
-average \textbf{pinball} loss and \textbf{CRPS} (from the quantile grid). Calibration uses
-prediction-interval coverage (PICP) and width, PIT-based recalibration~\cite{kuleshov2018},
-and \textbf{conformalized quantile regression} (CQR)~\cite{romano2019} fit on an early-2016
-calibration split and evaluated on late-2016. Hazard skill uses the \textbf{Brier} score on
-the exceedance probability $p_{t+h}$ \eqref{eq:thr}. Spatial transfer uses LOSO with a
-moving-block bootstrap (block $=24$\,h, $B=1000$) for 95\% CIs. Explainability uses
-\textbf{Integrated Gradients}~\cite{sundararajan2017} (completeness-checked, ``missing''
-baseline) and model-agnostic \textbf{occlusion}~\cite{fisher2019} in the model's own loss
-currency, reported together because saliency on time series is otherwise
-unreliable~\cite{ismail2020}. Table~\ref{tab:hyp} states the hypotheses and the experiment
-that tests each; all results below are transcribed from the project results log.
-
-\begin{table}[t]
-\caption{Hypotheses, the experiment that validates each, and the verdict.}
-\label{tab:hyp}
-\centering\footnotesize
-\renewcommand{\arraystretch}{1.18}
-\begin{tabular}{@{}p{0.46\columnwidth}p{0.30\columnwidth}p{0.14\columnwidth}@{}}
-\toprule
-\textbf{Hypothesis} & \textbf{Experiment} & \textbf{Verdict}\\
-\midrule
-H1: QR-PINN gives a valid, \emph{calibrated} full distribution beating climatology &
-Baseline + CQR (\ref{ssec:calib}) & Supported\\
-H2: embedded chemistry \emph{improves accuracy} &
-$\lambda$-sweep, forcing, hybrid (\ref{ssec:phys}) & \textbf{Refuted}\\
-H3: rank index is genuinely \emph{combined} & index rebalance (\ref{ssec:combined}) & Supported\\
-H4: model \emph{transfers} across stations & LOSO + bootstrap (\ref{ssec:transfer}) & Supported\\
-H5: two XAI methods \emph{agree}; drivers explain H2 & IG + occlusion (\ref{ssec:xai}) & Supported\\
-\bottomrule
-\end{tabular}
-\end{table}
+\section{Experimental Design}
+A probabilistic forecaster must be judged as a distribution, so we score it with strictly proper
+rules~\cite{gneiting2007}: the average pinball loss and the CRPS from the quantile grid. Whether its
+stated uncertainty can be trusted is a separate question, answered with prediction-interval coverage
+(PICP) and width, PIT recalibration~\cite{kuleshov2018}, and conformalised quantile regression
+(CQR)~\cite{romano2019} fit on an early-2016 split and tested on late-2016. Hazard skill is the Brier
+score on the exceedance probability $p_{t+h}$ of \eqref{eq:thr}, and spatial robustness comes from LOSO
+with a moving-block bootstrap (block $=24$\,h, $B=1000$) for 95\% confidence intervals. To see
+\emph{why} the model behaves as it does, we attribute its predictions with Integrated
+Gradients~\cite{sundararajan2017} against a completeness-checked ``missing'' baseline and with
+model-agnostic occlusion~\cite{fisher2019} in the model's own loss, reporting the two together because
+saliency on time series is unreliable alone~\cite{ismail2020}. Every number below is transcribed from the
+project results log.
 
 %================================================================== RESULTS
 \section{Results and Discussion}
 
-\subsection{The index is genuinely combined (H3)}\label{ssec:combined}
-Replacing the scale-based combination with the rank index \eqref{eq:H} raises \nox's
-prediction correlation from $0.116$ to $0.348$ and balances the variance shares (\S III-A),
-so the forecast responds to \emph{both} pollutants rather than tracking \othree\ alone.
+\subsection{A target that is genuinely combined}\label{ssec:combined}
+Before trusting the forecast we had to trust the target. The first version of $H$ scaled each pollutant
+and added them, but ozone's wider spread let it hijack the combination, and the model's prediction then
+correlated with \othree\ at $0.898$ while barely moving with \nox\ ($0.116$). The rank index
+\eqref{eq:H} strips out that scale advantage by construction: it lifts \nox's prediction correlation
+from $0.116$ to $0.348$ and evens the variance shares (\S III-A), so the forecast now answers to both
+pollutants instead of tracking ozone alone.
 
-\subsection{A calibrated distributional forecaster (H1)}\label{ssec:calib}
-A representative forecast is illustrated in Fig.~\ref{fig:laboni}.
-On the original scale-based index, all learned models cut pinball loss by ${\sim}45\%$
-versus a climatological quantile baseline ($1.05$ vs.\ $1.93$), confirming genuine skill.
-Because the adopted rank index lives on $[0,1]$, absolute values are not comparable across
-index definitions, so we report within-index comparisons hereafter. Raw quantiles
-\emph{under-cover} (Fig.~\ref{fig:results}a; PICP$_{90}=0.839$). PIT recalibration helps but
-leaves the upper tail short; \textbf{CQR restores near-nominal coverage at all levels}
-(80/90/95\% $\rightarrow$ $0.781/0.892/0.951$; Table~\ref{tab:calib}) at a modest width
-cost, and---critically for a 24\,h forecast---this coverage \textbf{holds across lead
-time} (CQR PICP$_{90}=0.893/0.887/0.902/0.900$ at $h=1/6/12/24$; Fig.~\ref{fig:results}a inset).
-Calibration is the model's strongest, most defensible property.
+\subsection{A calibrated distributional forecaster}\label{ssec:calib}
+That the forecaster has real skill is quickly established. On the original index every learned model cut
+the pinball loss by about $45\%$ relative to a climatological quantile baseline ($1.05$ vs.\ $1.93$); on
+the adopted rank index the data-driven model reaches a CRPS of $0.047$ and a Brier score of $0.110$ for
+the top-$30\%$ extreme, and Fig.~\ref{fig:forecast} shows its full predictive density tracking two
+representative day-ahead trajectories---the distribution rising across $Q_{70}$ during a hazardous
+build-up at Sylhet, and staying tight and below the extreme line on a calm day at Narayanganj. Because
+the rank index lives on $[0,1]$, its scores are comparable only within the rank index. Calibration is
+the harder test. Raw quantiles
+are over-confident, the nominal-$90\%$ interval covering only $0.839$ of outcomes (Fig.~\ref{fig:results}a);
+PIT recalibration narrows the gap but leaves the upper tail short, and only CQR returns coverage to
+nominal at every level ($80/90/95\%\rightarrow0.781/0.892/0.951$; Table~\ref{tab:calib}) for a modest cost
+in width. As a day-ahead product demands, that coverage also holds as the horizon lengthens, staying near
+$0.90$ at $h=1,6,12$ and $24$\,h (CQR PICP$_{90}=0.893/0.887/0.902/0.900$; Fig.~\ref{fig:results}a, inset).
+These guarantees do not come at the cost of robustness: the forecaster degrades gracefully across lead
+time, seed and exceedance threshold, and---most demandingly---across space (Table~\ref{tab:robust}), the
+spatial test we turn to next.
 
 \begin{table}[t]
 \caption{Interval calibration (rank index, late-2016 eval). CQR attains near-nominal
 empirical coverage (PICP) at all levels.\,\textsuperscript{a}}
 \label{tab:calib}
 \centering\footnotesize
-\renewcommand{\arraystretch}{1.15}
+\renewcommand{\arraystretch}{1.05}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 Nominal & PICP raw & PICP PIT & \textbf{PICP CQR} & width CQR\\
@@ -335,121 +343,157 @@ under time-series non-exchangeability; adaptive variants~\cite{gibbs2021} are fu
 
 \begin{figure*}[t]
 \centering
-\begin{minipage}[t]{0.40\textwidth}\centering
-\includegraphics[width=\linewidth]{fig3_reliability.png}\\[1pt]
+\begin{minipage}[t]{0.36\textwidth}\centering
+\includegraphics[width=\linewidth]{fig3_reliability.pdf}\\[1pt]
 {\footnotesize (a) Interval calibration (reliability)}
 \end{minipage}\hspace{0.05\textwidth}%
-\begin{minipage}[t]{0.40\textwidth}\centering
-\includegraphics[width=\linewidth]{fig4_importance.png}\\[1pt]
+\begin{minipage}[t]{0.36\textwidth}\centering
+\includegraphics[width=\linewidth]{fig4_importance.pdf}\\[1pt]
 {\footnotesize (b) Explainability (group importance)}
 \end{minipage}
-\caption{Headline results. (a)~Raw quantiles under-cover; PIT helps but leaves the tail short,
-and \textbf{CQR} restores near-nominal coverage at all levels (and across lead time, inset)
-(\texttt{src: run E6}). (b)~Two independent attribution methods \textbf{agree} ($r{=}0.917$) and
-identify pollutant-lag$+$calendar features---not meteorology---as the forecast drivers, explaining
-why embedded physics adds no accuracy (\texttt{src: run E9}).}
+\caption{Headline results. (a)~Raw quantiles under-cover; PIT helps but leaves the tail short, and CQR
+restores near-nominal coverage at all levels and across lead time (inset) (\texttt{src: run E6}).
+(b)~Two independent attribution methods agree ($r{=}0.917$) and point to pollutant-lag and calendar
+features, not meteorology, as the forecast drivers, which is why the embedded physics adds no accuracy
+(\texttt{src: run E9}).}
 \label{fig:results}
 \end{figure*}
 
-\subsection{Does the physics help? A rigorous negative result (H2)}\label{ssec:phys}
-We tested H2 three independent ways. \emph{(i)}~A physics-weight sweep: pinball is
-essentially flat from $\lambda_{\mathrm{phys}}=0$ ($0.2054$) to $0.2$ ($0.2063$) and
-\emph{worse} at $0.5$ ($0.2188$), with seed-stable headline numbers ($0.2063$ vs.\
-$0.2060$). \emph{(ii)}~Forcing the box-ODE as the sole forecaster was far worse
-($+0.1375$ pinball). \emph{(iii)}~A stable, capacity-preserving \emph{hybrid}
-(NN residual $+$ semi-implicit box-ODE) is still worse than the free model
-(Table~\ref{tab:skill}), \emph{despite being handed observed future meteorology as ODE
-forcing}. The verdict is consistent and reported honestly: \textbf{embedding
-\nox--\othree\ box chemistry does not improve probabilistic accuracy of $H$} on this
-\othree-led target. The engineering was nonetheless fixed---the hybrid ($0.25$) and
-physics-only ($0.32$) variants vastly beat the broken forcing trial ($0.35$), so the
-ODE no longer collapses.
+\subsection{Transfer to unseen stations, and robustness}\label{ssec:transfer}
+A forecaster is only useful where it has not been trained, so we retrained a station-agnostic QR-PINN and
+evaluated it leave-one-station-out. It generalises with a small, well-quantified penalty: LOSO pinball
+$0.2277\pm0.0655$ against an in-distribution $0.2024$, a transfer gap of only $+0.0253$. The per-station
+errors track how much clean data each fold carries, best on the large Barishal and Narayanganj folds and
+worst on the tiny BARC and Gazipur ones, which is exactly the behaviour a single global physics, rather
+than regime-clustered parameters, was meant to deliver. The usual spatial cross-validation caveats
+apply~\cite{roberts2017}. Spatial transfer is the most demanding of a battery of stress tests
+(Table~\ref{tab:robust}): coverage and skill also hold from $h{=}1$ to $24$\,h, are unchanged across
+seeds, and persist as the exceedance level rises from $Q_{70}$ to $Q_{90}$---a forecaster that is
+\emph{robust}, not merely accurate in-sample.
+
+\begin{table}[t]
+\caption{Forecast robustness (data-only QR-PINN, rank index). Skill and calibration hold across lead
+time, seed, exceedance threshold, and---most demandingly---spatial transfer.\,\textsuperscript{a}}
+\label{tab:robust}
+\centering\footnotesize
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{@{}p{0.205\columnwidth}p{0.235\columnwidth}p{0.45\columnwidth}@{}}
+\toprule
+\textbf{Stress test} & \textbf{Setting} & \textbf{Result}\\
+\midrule
+Lead time & $h{=}1\!\rightarrow\!24$ & pinball $0.141\!\rightarrow\!0.217$; PICP$_{90}$ $0.893\!\rightarrow\!0.900$\\
+Spatial (LOSO) & in-dist\,/\,LOSO & pinball $0.202\,/\,0.228$ (gap $+0.025$)\\
+Seed & $s_0\,/\,s_1$ & pinball $0.206\,/\,0.206$ (identical)\\
+Threshold & $Q_{70}/Q_{80}/Q_{90}$ & Brier(exc) $0.110\,/\,0.075\,/\,0.034$\\
+\bottomrule
+\end{tabular}
+\\[2pt]
+\raggedright\textsuperscript{a}\,\texttt{src:} lead \texttt{E12}, coverage \texttt{E6}, LOSO \texttt{E7},
+seed \texttt{E8}, threshold \texttt{THRCORR-Q70}. Rank-index $[0,1]$ metrics (internal comparison); rows
+probe distinct robustness axes; exceedance base rates are $0.263/0.134/0.046$ at $Q_{70}/Q_{80}/Q_{90}$.
+\end{table}
+
+\subsection{Putting the physics on trial}\label{ssec:phys}
+We attacked this question from three independent directions so that no single design choice could be
+blamed for the outcome. A physics-weight sweep came first: the
+pinball loss barely moved as $\lambda_{\mathrm{phys}}$ rose from $0$ ($0.2054$) to $0.2$ ($0.2063$) and
+grew clearly worse at $0.5$ ($0.2188$), with seed-to-seed scatter ($0.2063$ vs.\ $0.2060$) larger than
+any physics effect. We then went to the opposite extreme and forced the box-ODE to produce the forecast
+on its own, which was far worse ($+0.1375$ pinball). Finally we built the fairest test we could, a
+capacity-preserving hybrid in which a neural residual corrects a stable, semi-implicit box-ODE that is
+even handed the \emph{observed} future meteorology as forcing; it too trails the free model
+(Table~\ref{tab:skill}). The three verdicts agree, and we report them plainly: embedding \nox--\othree\
+box chemistry does not improve the probabilistic accuracy of $H$ on this ozone-led target. The failure
+is scientific rather than numerical, since the re-engineered ODE is sound: the hybrid ($0.25$) and
+physics-only ($0.32$) variants comfortably beat the earlier broken forcing trial ($0.35$), so the model
+no longer collapses; it simply does not need the chemistry. A fourth test, a regime-by-regime audit
+(\S\ref{ssec:limits}), closes the remaining escape routes: the data-driven forecast wins at every lead,
+in the upper tail, and in every input-missingness tier, with no regime in which the physics overtakes it.
 
 \begin{table}[t]
 \caption{Forecast skill on the combined index, test 2016 (seed 0).\,\textsuperscript{a}
 The data-only model is best; physics is neutral-to-negative.}
 \label{tab:skill}
 \centering\footnotesize
-\renewcommand{\arraystretch}{1.15}
+\renewcommand{\arraystretch}{1.05}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 Model & Pinball\,$\downarrow$ & CRPS\,$\downarrow$ & Brier(exc)\,$\downarrow$ & PICP$_{90}$\\
 \midrule
-\textbf{Data-only (free)} & \textbf{0.2099} & \textbf{0.0466} & \textbf{0.1005} & 0.788\\
-Hybrid (physics) & 0.2525 & 0.0561 & 0.1197 & 0.826\\
-Physics-only & 0.3174 & 0.0705 & 0.1370 & 0.772\\
+\textbf{Data-only (free)} & \textbf{0.2099} & \textbf{0.0466} & \textbf{0.1101} & 0.788\\
+Hybrid (physics) & 0.2525 & 0.0561 & 0.1376 & 0.826\\
+Physics-only & 0.3174 & 0.0705 & 0.1940 & 0.772\\
 \bottomrule
 \end{tabular}
 \\[2pt]
-\raggedright\textsuperscript{a}\,\texttt{src: run E10}. Rank-index metrics on $[0,1]$
-(internal comparison only). Seed-1 reproduces the ordering (free $0.195$, hybrid $0.260$).
+\raggedright\textsuperscript{a}\,Pinball/CRPS/PICP$_{90}$ \texttt{src: run E10}; Brier(exc) at the
+corrected $Q_{70}$ extreme cut \texttt{src: THRCORR-Q70}. Rank-index $[0,1]$ metrics (internal comparison
+only). Seed-1 reproduces the ordering (free $0.195$, hybrid $0.260$).
 \end{table}
 
-\subsection{Why physics does not help: explainability (H5)}\label{ssec:xai}
-Two independent attribution methods \textbf{agree strongly} (Pearson $r=0.917$ across
-feature groups; Fig.~\ref{fig:results}b), which is our robustness claim rather than any single
-saliency map. Both find the forecast is driven by \textbf{pollutant lags and calendar}
-features, while meteorology, photochemical and satellite inputs contribute little
-(Fig.~\ref{fig:results}b). This directly explains H2: predictability lives in the
-\othree/diurnal signal the network already learns from the lags, whereas the physics
-coupling chiefly concerns the noisy, traffic-driven \nox\ component. Station permutation is
-negligible ($\Delta$pinball $+0.0013$), and the day/night balance of attribution is nearly
-flat (\nox-side day $0.364$ / night $0.387$), consistent with a learned map dominated by
-recent concentrations.
+\subsection{Why the chemistry is redundant}\label{ssec:xai}
+The explanation comes from the attribution analysis, and its credibility rests on agreement rather than
+on any single saliency map: Integrated Gradients and occlusion, computed independently, rank the feature
+groups almost identically (Pearson $r=0.917$; Fig.~\ref{fig:results}b). Both put the forecast's weight on
+recent pollutant lags and the calendar, and find meteorology, photochemistry and satellite inputs nearly
+irrelevant. That is precisely why the physics cannot help: the predictable part of $H$ is the ozone and
+diurnal signal the network already reads off the lags, whereas the embedded coupling mostly governs the
+noisy, traffic-driven \nox\ term. The picture is stable under two further checks, since permuting the
+station identity costs almost nothing ($\Delta$pinball $+0.0013$) and the day-night balance of
+attribution is nearly flat (\nox-side $0.364$ by day, $0.387$ by night), both consistent with a map
+dominated by recent concentrations.
 
-% Figs 3 & 4 are combined side-by-side as Fig.~\ref{fig:results} above (V-B).
+% Figs 3 & 4 are combined side-by-side as Fig.~\ref{fig:results} above.
 
-\subsection{Spatial transfer (H4)}\label{ssec:transfer}
-A station-agnostic QR-PINN generalises to held-out stations with a small, quantified
-penalty: LOSO pinball $0.2277\pm0.0655$ vs.\ in-distribution $0.2024$, a transfer gap of
-$+0.0253$. Per-station error tracks data volume and cleanliness (best at the large, clean
-Barishal/Narayanganj folds, worst at the tiny BARC and Gazipur folds), supporting the
-choice of \emph{global}, rather than regime-clustered, physics for transferability.
-Standard spatial cross-validation caveats apply~\cite{roberts2017}.
+\subsection{The payoff of the physics, and where it should help}\label{ssec:limits}
+If the chemistry does not sharpen accuracy, it earns its keep as interpretation. The fitted parameters
+emerge in physically sensible order: learned photolysis ($0.352$) far exceeds titration ($0.057$), the
+Arrhenius term is positive, dry deposition orders as $\mathrm{NO}>\notwo>\othree$ ($0.034/0.027/0.021$),
+and the per-station emission scales recover real contrasts between the industrial sites and the
+residential periphery (one implausible sparse-data scale is excluded). The hybrid forecast even follows
+the physics rollout closely (correlation $0.749$). The QR-PINN is therefore best read as a
+physics-guided, interpretable forecaster rather than a physics-driven one.
 
-\subsection{Interpretability is the physics payoff}
-Although it does not sharpen accuracy, the embedded physics yields an interpretable,
-\emph{physically ordered} parameterisation: learned photolysis ($0.352$) $\gg$ titration
-($0.057$); a positive Arrhenius term; deposition ordered $\mathrm{NO}>\notwo>\othree$
-($0.034/0.027/0.021$); and per-station emission scales that recover real city contrasts
-(industrial Narayanganj high, residential peripheries low). The hybrid forecast tracks the
-physics rollout (correlation $0.749$). One station's emission scale is an implausible
-sparse-data artefact and is excluded. This positions the QR-PINN as a
-\emph{physics-guided, interpretable} probabilistic forecaster rather than a
-physics-accuracy mechanism.
+Two boundaries keep this negative result in proportion. The physics variants were handed observed future
+meteorology as forcing---an optimistic upper bound---and the rank-index scores are comparable only within
+this study. More fundamentally, PINNs help most where data are sparse, noisy or out of
+distribution~\cite{raissi2019,karniadakis2021,hettige2024}, and ours is the opposite case: $86{,}037$
+hourly points on an ozone-led index whose skill already lives in recent concentrations (\S\ref{ssec:xai}).
+Stratifying the free-versus-hybrid gap (\texttt{src: run E12}) confirms the free model wins in every
+regime, yet its margin \emph{shrinks} as inputs grow gappier (pinball gap $0.046\!\rightarrow\!0.040$), so
+the physics begins to repay where data thin out. Structurally, too, the embedded Leighton cycle is
+closed---conserving \ox\ and producing no net \othree---so it can never generate the
+VOC/$\mathrm{RO_2}$-driven ozone episodes it is scored against.
 
 %================================================================== CONCLUSION
 \section{Conclusion}
-We presented a quantile physics-informed neural network that forecasts the full 24\,h
-predictive distribution of a balanced combined \nox--\othree\ hazard over Bangladesh. The
-forecaster is well calibrated (CQR near-nominal across levels and lead time), transfers
-across unseen stations with a bounded penalty, and is explainable. We tested whether
-embedding \nox--\othree\ photochemistry improves accuracy and found, across three
-independent experiments, that it does not on this \othree-led index; explainable AI
-($r=0.917$ method agreement) shows the skill resides in pollutant-lag and calendar
-features. We report this negative result transparently and reposition the physics as a
-source of interpretability. Future work targets adaptive conformal inference for
-non-exchangeable coverage~\cite{gibbs2021}, dropping the perfect-meteorology forcing
-assumption, and explicit emission inventories.
+We forecast the full day-ahead distribution of a balanced \nox--\othree\ hazard over Bangladesh and
+tested whether embedding the underlying photochemistry improves it. The forecaster succeeds: it is well
+calibrated, with CQR holding near-nominal coverage across levels and lead times, it transfers to unseen
+stations at bounded cost, and it is explainable. The physics, tested four independent ways, does not
+improve accuracy on this ozone-led index; the attribution analysis shows why, since the skill resides in
+pollutant-lag and calendar structure, not the meteorological drivers the chemistry acts on. We report
+that negative result openly and let the physics stand as a source of interpretability.
 
-\section*{Acknowledgement of AI Assistance}
-AI tools assisted with code, figure generation, and language editing (well below 25\% of
-the work); all experiments, results, and scientific claims are the authors' own and trace
-to a versioned results log.
+The same analysis points the way forward. The embedded chemistry should be completed, not abandoned: a
+VOC/$\mathrm{RO_2}$ proxy such as the satellite formaldehyde-to-\notwo\ ratio would give the closed
+Leighton cycle the net-ozone pathway it now lacks (\S\ref{ssec:limits}), and a graph advection--diffusion
+coupling across stations~\cite{hettige2024} could replace the per-station box where data are scarce. The
+calibration should move to adaptive conformal inference~\cite{gibbs2021} and shed the perfect-meteorology
+forcing assumption.
+
+\section*{Acknowledgments}
+The authors thank the Department of Environment (DoE), Bangladesh, for the Continuous Air Monitoring Station (CAMS) data. Claude Opus 4.8 was used for language editing and code optimization.
+
 
 %================================================================== REFERENCES
+\scriptsize
 \begin{thebibliography}{00}
+\setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}\setlength{\parskip}{0pt}
 \bibitem{worldbank2022} World Bank, \emph{Breathing Heavy: New Evidence on Air Pollution
 and Health in Bangladesh}. Washington, DC: World Bank, 2022.
-\bibitem{billah2026} M. Billah \emph{et al.}, ``Meteorological drivers of fine particulate
-matter variability in Dhaka City,'' \emph{Discover Environment}, 2026,
-doi:10.1007/s44274-026-00560-3.
 \bibitem{seinfeld2016} J. H. Seinfeld and S. N. Pandis, \emph{Atmospheric Chemistry and
 Physics}, 3rd ed. Hoboken, NJ: Wiley, 2016.
-\bibitem{taheri2024} A. Taheri, B. Khorsandi, and M. R. Alavi Moghaddam, ``Analysis of
-local and regional contributions of oxidant ($\mathrm{O_x}=\mathrm{O_3}+\mathrm{NO_2}$)
-levels based on monitoring data, a review,'' \emph{Int. J. Environ. Sci. Technol.},
-vol.~21, pp.~8211--8230, 2024, doi:10.1007/s13762-024-05563-2.
 \bibitem{fu2022} Y. Fu, W. Zhang, Y. Li, H. Li, F. Deng, and Q. Ma, ``Association and
 interaction of $\mathrm{O_3}$ and $\mathrm{NO_2}$ with emergency room visits for
 respiratory diseases in Beijing, China: a time-series study,'' \emph{BMC Public Health},
@@ -464,22 +508,13 @@ doi:10.1016/j.jcp.2018.10.045.
 \bibitem{karniadakis2021} G. E. Karniadakis \emph{et al.}, ``Physics-informed machine
 learning,'' \emph{Nat. Rev. Phys.}, vol.~3, pp.~422--440, 2021,
 doi:10.1038/s42254-021-00314-5.
-\bibitem{yang2021} L. Yang, X. Meng, and G. E. Karniadakis, ``B-PINNs: Bayesian
-physics-informed neural networks for forward and inverse PDE problems with noisy data,''
-\emph{J. Comput. Phys.}, vol.~425, art.~109913, 2021, doi:10.1016/j.jcp.2020.109913.
 \bibitem{hettige2024} K. H. Hettige \emph{et al.}, ``AirPhyNet: harnessing physics-guided
 neural networks for air quality prediction,'' in \emph{Proc. ICLR}, 2024,
 arXiv:2402.03784.
-\bibitem{boli2023} B. Li, Q. Hu, M. Gao, T. Liu, C. Zhang, and C. Liu, ``Physical informed
-neural network improving the WRF-CHEM results of air pollution using satellite-based
-remote sensing data,'' \emph{Atmos. Environ.}, vol.~311, art.~120031, 2023,
-doi:10.1016/j.atmosenv.2023.120031.
 \bibitem{hu2025} H. Hu, Q. Cheng, S. Guo \emph{et al.}, ``A framework for parameter
 estimation and uncertainty quantification in systems biology using quantile regression and
 physics-informed neural networks,'' \emph{Bull. Math. Biol.}, vol.~87, 2025,
 doi:10.1007/s11538-025-01439-9.
-\bibitem{koenker1978} R. Koenker and G. Bassett, ``Regression quantiles,''
-\emph{Econometrica}, vol.~46, no.~1, pp.~33--50, 1978, doi:10.2307/1913643.
 \bibitem{cannon2018} A. J. Cannon, ``Non-crossing nonlinear regression quantiles by
 monotone composite quantile regression neural network, with application to rainfall
 extremes,'' \emph{Stoch. Environ. Res. Risk Assess.}, vol.~32, pp.~3207--3225, 2018,

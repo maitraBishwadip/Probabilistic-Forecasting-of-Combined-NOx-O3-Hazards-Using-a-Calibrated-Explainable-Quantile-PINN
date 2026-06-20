@@ -115,8 +115,8 @@ contribution:
 **Gap.** These works are in systems biology, materials, and reliability — **not air quality**, and
 they do not address a **combined two-pollutant extreme** or **hourly multi-step forecasting**. A
 QR-PINN that (i) emits the full conditional distribution of a **combined NOx–O3 index**, (ii) is
-constrained by **NOx–O3 photochemistry**, and (iii) is evaluated on the **deadly upper-70 % region**,
-appears to be unaddressed.
+constrained by **NOx–O3 photochemistry**, and (iii) is evaluated on the **most-polluted top-30 % extreme
+region (Q₇₀, with a severe upper-decile Q₉₀ tier)**, appears to be unaddressed.
 
 ---
 
@@ -143,8 +143,8 @@ governing constraints the PINN enforces (`EXPERIMENT_DESIGN.md §3`).
 
 ## 7. Synergistic health burden of combined NOx–O3 exposure (why the extreme is "deadly")
 
-The motivation for flagging a large (≥70 %) hazardous class is that combined oxidant exposure is
-disproportionately harmful:
+The motivation for flagging the most-polluted top 30 % (Q₇₀) as the hazardous class — with the upper
+decile (Q₉₀) as a severe tier — is that combined oxidant exposure is disproportionately harmful:
 
 - **O₃ × NO₂ interaction, Beijing time-series (PMC, 2022)** — short-term O₃, NO₂ and Oₓ are
   positively associated with ER visits for respiratory disease, with interaction effects.
@@ -155,7 +155,8 @@ disproportionately harmful:
   each IQR rise in Oₓ is linked to adverse outcomes.
 
 These establish that the *joint* upper range of NOx and O₃ — not only the rare top percentile — is
-the public-health-relevant region, justifying the 30th-percentile cutoff (≥70 % hazardous class).
+the public-health-relevant region, justifying a broad **top-30 % (Q₇₀) hazardous class** with the
+**upper decile (Q₉₀) as a severe tier**.
 
 ---
 
@@ -185,7 +186,7 @@ heteroscedasticity-adaptive coverage; for non-exchangeable hourly data the princ
 EnbPI** (Xu & Xie 2021). These define the evaluation protocol in `EXPERIMENT_DESIGN.md §6` and the
 calibration methods in `METHODS_calibration.md`: pinball loss, CRPS, prediction-interval coverage
 (PICP) and width, PIT histograms, CQR-guaranteed intervals, plus tail-focused exceedance metrics on
-the ≥70 % hazardous region.
+the top-30 % hazardous region (Q₇₀) and the severe upper decile (Q₉₀).
 
 ---
 
@@ -195,8 +196,9 @@ the ≥70 % hazardous region.
    air quality; QR-PINN work exists only outside the atmospheric domain (§ 5).
 2. **Target:** prior air-quality QR/PINN work is **single-pollutant**; this study forecasts a
    **combined NOx–O3 oxidant hazard** grounded in Oₓ chemistry (§ 6).
-3. **Risk framing:** existing extreme studies chase the rare top percentile; the health evidence
-   (§ 7) motivates a **broad ≥70 % hazardous class**, a deliberate departure.
+3. **Risk framing:** the extreme is the **most-polluted top 30 % (Q₇₀)** with a **severe upper-decile
+   (Q₉₀)** tier — broader than the rare top percentile most extreme studies chase, matching the health
+   evidence (§ 7) that the *joint* oxidant upper range is harmful.
 4. **Region:** **first** probabilistic, physics-informed combined-pollutant forecast for
    **Bangladesh** (§ 8).
 5. **Explainability:** the forecast is not a black box — its attributions are used to **audit physics

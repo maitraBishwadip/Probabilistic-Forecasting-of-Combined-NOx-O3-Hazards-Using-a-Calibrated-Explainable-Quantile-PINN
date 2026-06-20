@@ -106,7 +106,8 @@ exceedance probability `P(H ≥ thr)`) and a **physics head** (a coupled NO–NO
 **Leighton** photostationary‑state and **Oₓ‑conservation** residuals, global learnable rates). The
 composite loss is pinball (primary) + annealed physics/chemistry residuals. The combined hazard index
 is rank/quantile‑uniform, `H = ½·F_NOₓ(NOₓ) + ½·F_O₃(O₃)` (train empirical CDFs), with the
-combined‑extreme cutoff at the 30th percentile (≥ 70 % of hours are the hazardous class).
+combined‑extreme cutoff at the **70th percentile** (the most‑polluted **top 30 %** of hours are the
+extreme/hazardous class; Q90 marks a secondary "severe" tier).
 
 ---
 

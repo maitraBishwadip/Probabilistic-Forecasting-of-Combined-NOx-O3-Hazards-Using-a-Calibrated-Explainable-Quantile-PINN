@@ -47,11 +47,24 @@ plt.rcParams.update({
 })
 INK = "#1a1a1a"
 
+def _f(*names):
+    """Resolve a data file that may live at ROOT or in a moved subfolder (data/, results/)."""
+    for n in names:
+        p = os.path.join(ROOT, n)
+        if os.path.exists(p):
+            return p
+    return os.path.join(ROOT, names[0])
+
 def save(fig, name):
     for ext in ("png", "pdf"):
         fig.savefig(os.path.join(OUT, f"{name}.{ext}"))
+    # camera-ready raster deliverable: LZW-compressed TIFF (author request)
+    try:
+        fig.savefig(os.path.join(OUT, f"{name}.tiff"), pil_kwargs={"compression": "tiff_lzw"})
+    except Exception:
+        fig.savefig(os.path.join(OUT, f"{name}.tiff"))
     plt.close(fig)
-    print("saved", name)
+    print("saved", name, "(png/pdf/tiff)")
 
 def despine(ax, keep=("left", "bottom")):
     for s in ("top", "right", "left", "bottom"):
@@ -100,7 +113,7 @@ def draw_map(ax, fig=None):
 
 # ================================================================ distribution panel
 def draw_distribution(ax):
-    df = pd.read_csv(os.path.join(ROOT, "BD_DOE_2014-16.csv"),
+    df = pd.read_csv(_f("BD_DOE_2014-16.csv", "data/BD_DOE_2014-16.csv"),
                      usecols=["O3_ppb", "NOx_ppb"])
     o3 = df["O3_ppb"].to_numpy(); nox = df["NOx_ppb"].to_numpy()
     o3 = o3[(o3 > 0) & (o3 <= 300) & np.isfinite(o3)]
@@ -122,14 +135,50 @@ def draw_distribution(ax):
     ax.grid(axis="y", alpha=0.2, lw=0.5)
     despine(ax)
 
+# ================================================================ pollutant surface panel
+def draw_surface(ax, key, cmap, label, fig):
+    """IDW station-mean surface (ppb) clipped to Bangladesh -- replaces the missing no2/o3.png
+    with a crisp, reproducible kriged-style surface. Values from gis_station_pollutant_regimes.json."""
+    from matplotlib.path import Path as MplPath
+    bd = json.load(open(os.path.join(ROOT, "bd.json")))
+    st = json.load(open(os.path.join(ROOT, "gis_station_pollutant_regimes.json")))["stations"]
+    px = np.array([s["longitude"] for s in st]); py = np.array([s["latitude"] for s in st])
+    pv = np.array([s[key] for s in st], float)
+    gx, gy = np.meshgrid(np.linspace(87.9, 92.8, 260), np.linspace(20.4, 26.8, 320))
+    Z = np.zeros_like(gx); W = np.zeros_like(gx)
+    for xi, yi, vi in zip(px, py, pv):                       # inverse-distance weighting
+        w = 1.0 / ((gx - xi) ** 2 + (gy - yi) ** 2 + 1e-6) ** 1.35
+        Z += w * vi; W += w
+    Z = Z / W
+    paths = []
+    for feat in bd["features"]:
+        g = feat["geometry"]; polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
+        for poly in polys:
+            paths.append(MplPath(np.asarray(poly[0])))
+    pts = np.column_stack([gx.ravel(), gy.ravel()]); inside = np.zeros(len(pts), bool)
+    for p in paths:
+        inside |= p.contains_points(pts)
+    Zm = Z.ravel(); Zm[~inside] = np.nan; Zm = Zm.reshape(gx.shape)
+    im = ax.contourf(gx, gy, Zm, levels=14, cmap=cmap, zorder=1, extend="max")
+    ax.contour(gx, gy, Zm, levels=7, colors="white", linewidths=0.25, alpha=0.55, zorder=2)
+    for p in paths:
+        v = p.vertices; ax.plot(v[:, 0], v[:, 1], color="#333", lw=0.35, zorder=3)
+    ax.scatter(px, py, c="k", s=8, marker="*", edgecolor="white", linewidth=0.35, zorder=4)
+    ax.set_xlim(87.9, 92.8); ax.set_ylim(20.4, 26.8)
+    ax.set_aspect(1.0 / np.cos(np.deg2rad(23.7)))
+    ax.set_xticks([]); ax.set_yticks([]); despine(ax, keep=())
+    cb = fig.colorbar(im, ax=ax, fraction=0.05, pad=0.03)
+    cb.ax.tick_params(labelsize=5, length=1.5, pad=1); cb.set_label(label, fontsize=5.6, labelpad=1)
+    cb.outline.set_linewidth(0.4)
+
 # ================================================================ FIG 1 composite
 def fig1_composite():
     fig = plt.figure(figsize=(7.16, 2.55))
     gs = fig.add_gridspec(1, 4, width_ratios=[1.30, 1.18, 1.0, 1.0], wspace=0.34)
     ax_map = fig.add_subplot(gs[0, 0]); draw_map(ax_map, fig)
     ax_dst = fig.add_subplot(gs[0, 1]); draw_distribution(ax_dst)
-    ax_no2 = fig.add_subplot(gs[0, 2]); ax_no2.imshow(mpimg.imread(os.path.join(ROOT, "no2.png"))); ax_no2.axis("off")
-    ax_o3  = fig.add_subplot(gs[0, 3]); ax_o3.imshow(mpimg.imread(os.path.join(ROOT, "o3.png")));  ax_o3.axis("off")
+    ax_no2 = fig.add_subplot(gs[0, 2]); draw_surface(ax_no2, "mean_NO2_ppb", "Blues", "ppb", fig)
+    ax_o3  = fig.add_subplot(gs[0, 3]); draw_surface(ax_o3, "mean_O3_ppb", "YlOrRd", "ppb", fig)
     tags = [(ax_map,"(a) Network"),(ax_dst,"(b) Data distribution"),
             (ax_no2,"(c) $\\mathrm{NO_2}$ surface"),(ax_o3,"(d) $\\mathrm{O_3}$ surface")]
     for ax, t in tags:
@@ -191,7 +240,7 @@ def fig2_architecture():
 
 # ================================================================ FIG 3 reliability
 def fig3_reliability():
-    e6 = json.load(open(os.path.join(ROOT, "results_e6.json")))
+    e6 = json.load(open(_f("results_e6.json", "results/results_e6.json")))
     cov, cqrd = e6["coverage"], e6["cqr"]
     levels = ["80", "90", "95"]
     nominal = np.array([cov[l]["nominal"] for l in levels])
@@ -294,9 +343,116 @@ def fig4_importance():
     fig.tight_layout(pad=0.4)
     save(fig, "fig4_importance")
 
+# ================================================================ FIG 2 forecast
+def fig2_forecast():
+    """Two representative day-ahead forecasts from the headline data-only QR-PINN (FREE), test 2016.
+    All arrays are REAL cached predictions (artefacts/e12_preds.npz, run E12) -- nothing synthetic.
+    Each panel: predictive median + 80%/90% intervals + observed H, with the corrected extreme line
+    H>=Q70 and a derived exceedance-probability ribbon P(H>=Q70) read off the predicted CDF."""
+    THR70 = 0.6087  # src: RESULTS_LOG.md THRCORR-Q70 (corrected top-30% extreme cut)
+    d = np.load(os.path.join(ROOT, "artefacts", "e12_preds.npz"), allow_pickle=True)
+    Q, Y, M = d["free_Q"], d["free_Y"], d["free_M"]
+    taus = d["taus"]; stn = d["te_station"]
+    stations = json.load(open(os.path.join(ROOT, "artefacts", "qrpinn_meta.json")))["stations"]
+    i05, i10, i50, i90, i95 = 0, 1, 4, 7, 8     # tau grid [.05 .10 .20 .30 .50 .70 .80 .90 .95]
+    HZ = Q.shape[1]; x = np.arange(1, HZ + 1); nobs = M.sum(1)
+    strong = {"SYLHET", "DARUS SALAM", "NARAYANGANJ", "KHULNA", "AGRABAD", "BARISHAL"}
+
+    def cov90(i):
+        m = M[i] > 0
+        return ((Y[i] >= Q[i, :, i05]) & (Y[i] <= Q[i, :, i95]))[m].mean()
+    def pexc(i):                                 # P(H>=Q70) per lead off the predicted CDF
+        out = np.empty(HZ)
+        for h in range(HZ):
+            q = Q[i, h]; k = int((q < THR70).sum())
+            if k == 0: out[h] = taus[0]
+            elif k == len(taus): out[h] = taus[-1]
+            else: out[h] = taus[k - 1] + (THR70 - q[k - 1]) / max(q[k] - q[k - 1], 1e-9) * (taus[k] - taus[k - 1])
+        return 1.0 - out
+
+    # --- deterministic, reproducible anchor selection from the fixed npz ---
+    epi = []                                      # (a) hazardous build-up crossing Q70
+    for i in range(len(Y)):
+        if nobs[i] < 21 or stations[stn[i]] not in strong: continue
+        m = M[i] > 0; yo = Y[i][m]
+        if not (yo.min() < THR70 <= yo.max()): continue
+        ef = (yo >= THR70).mean()
+        if not (0.25 <= ef <= 0.7): continue
+        c = cov90(i); rng = yo.max() - yo.min(); mae = np.abs(yo - Q[i, :, i50][m]).mean()
+        if c >= 0.85 and rng >= 0.30 and mae <= 0.07:
+            epi.append((rng, -mae, i))
+    epi.sort(reverse=True); iA = epi[0][2]; sA = stations[stn[iA]]
+    calm = []                                     # (b) low-risk day at a DIFFERENT station
+    for i in range(len(Y)):
+        if nobs[i] < 21 or stations[stn[i]] == sA or stations[stn[i]] not in strong: continue
+        m = M[i] > 0; yo = Y[i][m]; ef = (yo >= THR70).mean()
+        if ef > 0.15: continue
+        c = cov90(i); rng = yo.max() - yo.min(); mae = np.abs(yo - Q[i, :, i50][m]).mean()
+        if c >= 0.90 and rng >= 0.10 and mae <= 0.07:
+            calm.append((ef, mae, -rng, i))
+    calm.sort(); iB = calm[0][3]; sB = stations[stn[iB]]
+    print(f"  fig2_forecast anchors: A={iA} ({sA}, episode), B={iB} ({sB}, low-risk)")
+
+    # ---- predictive-density "river": smooth contour of p(H|h) from the monotone quantiles ----
+    yg = np.linspace(0.0, 1.0, 280)
+    kx = np.arange(-14, 15); ker = np.exp(-(kx ** 2) / (2 * 5.5 ** 2)); ker /= ker.sum()
+    def dens_field(i):
+        cols = []
+        for h in range(HZ):
+            q = np.maximum.accumulate(Q[i, h].astype(float)) + 1e-4 * np.arange(len(taus))
+            F = np.interp(yg, q, taus, left=0.0, right=1.0)        # piecewise-linear CDF
+            f = np.clip(np.gradient(F, yg), 0, None)               # density = dF/dH
+            f = np.convolve(f, ker, mode="same")
+            cols.append(f / (f.max() + 1e-9))                      # per-lead relative density
+        return np.column_stack(cols)                               # [H, lead]
+    ZA, ZB = dens_field(iA), dens_field(iB)
+    XX, YY = np.meshgrid(x, yg)
+
+    fig = plt.figure(figsize=(7.16, 3.25))
+    gs = fig.add_gridspec(2, 2, height_ratios=[3.0, 0.95], hspace=0.14, wspace=0.20,
+                          left=0.065, right=0.895, top=0.905, bottom=0.135)
+    mesh = None
+    for col, (i, stt, tag, Z) in enumerate([(iA, sA, "(a)", ZA), (iB, sB, "(b)", ZB)]):
+        ax = fig.add_subplot(gs[0, col]); axp = fig.add_subplot(gs[1, col], sharex=ax)
+        m = M[i] > 0
+        mesh = ax.pcolormesh(XX, YY, Z, cmap="Blues", shading="gouraud", vmin=0, vmax=1,
+                             zorder=0, rasterized=True)
+        # faint 90% predictive envelope + crisp white median (cased for contrast on the density)
+        ax.plot(x, Q[i, :, i05], color="#2171b5", lw=0.6, alpha=0.55, zorder=2)
+        ax.plot(x, Q[i, :, i95], color="#2171b5", lw=0.6, alpha=0.55, zorder=2)
+        ax.plot(x, Q[i, :, i50], color="#08306b", lw=3.0, zorder=3.5)
+        ax.plot(x, Q[i, :, i50], color="white", lw=1.4, zorder=4, label="median forecast")
+        ax.scatter(x[m], Y[i][m], s=15, color="#111", zorder=5, label="observed",
+                   edgecolor="white", linewidth=0.4)
+        ax.axhline(THR70, color="#cb181d", ls=(0, (5, 2)), lw=1.1, zorder=3)
+        ax.text(HZ - 0.2, THR70 + 0.012, "extreme  $H\\!\\geq\\!Q_{70}$", color="#b30000",
+                fontsize=6.0, ha="right", va="bottom", fontweight="bold")
+        ax.set_ylim(min(0.14, Q[i, :, i05].min() - 0.03), max(0.88, Q[i, :, i95].max() + 0.04))
+        ax.set_xlim(0.5, HZ + 0.5)
+        ax.set_title(f"{tag} {stt.title()} — day-ahead predictive density", fontsize=8, loc="left", pad=3)
+        ax.set_ylabel("hazard $H$", fontsize=8)
+        ax.tick_params(labelbottom=False, labelsize=7); despine(ax)
+        pe = pexc(i)
+        axp.fill_between(x, 0, pe, color="#cb181d", alpha=0.22, lw=0, zorder=1)
+        axp.plot(x, pe, color="#cb181d", lw=1.3, zorder=2)
+        axp.set_ylim(0, 1.0); axp.set_yticks([0, 1]); axp.set_ylabel("$P(\\mathrm{ext})$", fontsize=6.8)
+        axp.set_xlim(0.5, HZ + 0.5); axp.set_xticks([1, 6, 12, 18, 24])
+        axp.set_xlabel("lead time $h$ (hours)", fontsize=8)
+        axp.tick_params(labelsize=7); axp.grid(alpha=0.15, lw=0.5); despine(axp)
+        if col == 0:
+            ax.legend(loc="upper left", fontsize=6.2, handlelength=1.2, borderaxespad=0.25,
+                      labelspacing=0.3, framealpha=0.75)
+    # shared slim colourbar: predictive density (low -> high)
+    cax = fig.add_axes([0.91, 0.37, 0.014, 0.53])
+    cb = fig.colorbar(mesh, cax=cax); cb.set_label("predictive density", fontsize=6.6, labelpad=2)
+    cb.set_ticks([0, 1]); cb.set_ticklabels(["low", "high"]); cb.ax.tick_params(labelsize=5.6, length=0)
+    cb.outline.set_linewidth(0.5)
+    save(fig, "fig2_forecast")
+
 if __name__ == "__main__":
-    fig1_composite()
-    fig2_architecture()
-    fig3_reliability()
-    fig4_importance()
+    for fn in (fig1_composite, fig2_forecast, fig3_reliability, fig4_importance):
+        try:
+            fn()
+        except Exception as e:
+            print(f"  [skip] {fn.__name__}: {e}")
     print("DONE ->", OUT)

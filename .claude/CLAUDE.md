@@ -66,7 +66,7 @@ The assistant must keep an accurate, persistent memory of the study's architectu
 | **Target pollutants** | **NOx and O3** (combined) — whole dataset, **no regime conditioning** |
 | **Combined target** | a **single combined NOx–O3 hazard index** `H` (see `EXPERIMENT_DESIGN.md §2`) |
 | **Model output** | the **entire predictive probability distribution** of `H` (full set of conditional quantiles → CDF/PDF), per horizon |
-| **Extreme definition** | **cutoff at the 30th percentile of `H`** ⇒ **≥70 % of observations are the "extreme/hazardous" class** ("combined impact can be deadly") |
+| **Extreme definition** | **cutoff at the 70th percentile of `H`** ⇒ the **most-polluted top 30 % of hours are the "extreme/hazardous" class**; **Q90 = secondary "severe" tier** (corrects an earlier *inverted* Q30/≥70 % definition — an extreme is the rare upper tail, not the bulk; see `RESULTS_LOG.md` THRCORR-Q70) |
 | **Resolution / timing** | **hourly, multi-step**: forecast the next-24 h trajectory distribution |
 | **Splits** | temporal (train 2014–15, test 2016) + Leave-One-Station-Out for transfer |
 

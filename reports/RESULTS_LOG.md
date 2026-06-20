@@ -1,5 +1,13 @@
 # RESULTS LOG — source of truth for the paper (see CLAUDE.md)
 
+> 🛠 **EXTREME-DEFINITION CORRECTION (2026-06-20 — see run `THRCORR-Q70` at the bottom).** The
+> "extreme/hazardous" class was originally defined as `H ≥ Q30` (which wrongly labels ~70–83 % of
+> hours "extreme"). It is **corrected to the most-polluted top 30 % = `H ≥ Q70(H_train) = 0.6087`**,
+> with `Q90 = 0.7611` as a "severe" tier. This affects **only** the exceedance probability,
+> **Brier(exceedance)**, and the **base rate**; pinball / CRPS / PICP / CQR / LOSO are
+> threshold-independent and unchanged. In every run block **below**, any `Q30` Brier/base-rate is a
+> historical record at the inverted cut and is **superseded** by the `THRCORR-Q70` re-score.
+
 ## Run QRPINN-20260615-212045
 - date: 2026-06-15T21:20:45
 - code: pipeline/02_qrpinn_dataprep.py + pipeline/03_qrpinn_model.py
@@ -198,3 +206,49 @@
 - per-station emission scale: AGRABAD=0.37, BARC=8.40, BARISHAL=0.28, DARUS SALAM=0.71, GAZIPUR=1.10, KHULNA=0.78, NARAYANGANJ=3.26, RAJSHAHI=0.60, SYLHET=0.52
 - **VERDICT: physics WORSE** (threshold ~0.003 pinball / 0.0015 CRPS vs E8 noise)
 - fig figs/e10_physics.png ; NOTE rank-index [0,1] metrics; future met used as forcing (forecast-met assumption).
+
+## Run E12-20260618-005147  (E12: regime-stratified physics value — is there ANY regime where physics helps?)
+- date: 2026-06-18T00:51:47 | code: pipeline/12_qrpinn_e12.py | rank index; seed=0 | stratified RE-SCORING of deterministically reproduced E10 models (no new design; predictions cached to artefacts/e12_preds.npz; LOSO deferred to E13)
+- motivation: pooled E10 says physics ≠ accuracy, but PINN gains are known to concentrate in specific regimes (sparse/gappy, upper tail, long lead — AirPhyNet ICLR'24; Krishnapriyan NeurIPS'21). Test each regime separately.
+- reproduction check (pinball Στ vs E10 seed0): free 0.2099 (E10 0.2099), physonly 0.3174 (E10 0.3174), hybrid 0.2525 (E10 0.2525) — EXACT (d=-0.0000), models identical to E10.
+
+**Overall (test 2016, seed 0)** — pinball = SUM over 9 τ (E10 convention); τ=0.90/0.95 are per-quantile
+| variant | pinball (Στ) | τ=0.90 | τ=0.95 | Brier@Q30 | Brier@Q90 |
+|---|---|---|---|---|---|
+| FREE | 0.2099 | 0.0155 | 0.0096 | 0.1005 | 0.0338 |
+| HYBRID | 0.2525 | 0.0195 | 0.0120 | 0.1197 | 0.0470 |
+| PHYS-ONLY | 0.3174 | 0.0210 | 0.0126 | 0.1370 | 0.0648 |
+
+**Regime slices, HYBRID − FREE pinball (Στ); band ±0.003; negative = physics helps**
+- upper tail (proper): τ=0.95 +0.0024 (worse-ish), Brier@Q90 FREE 0.034 < HYBRID 0.047 < PHYS 0.065 → physics worse in the tail.
+- extreme-outcome subset (H≥Q90): FREE 0.354, HYBRID 0.415, PHYS-ONLY 0.333. CAVEAT — conditioning on the outcome rewards PHYS-ONLY's positive bias; NOT physics skill (proper tail metrics above favor FREE).
+- lead time h=1→24: gap +0.030 (best, h≈11) → +0.058 (h=24); worse at EVERY lead, no long-lead crossover.
+- by-lead pinball (FREE), absolute: h=1 0.141 → h=24 0.217 (from results_e12.json `by_lead.free`; rises with lead). Used in paper Table `tab:robust`.
+- input-window missingness low/mid/high: +0.046 / +0.041 / +0.040 — gap narrows with gaps (theoretically-expected direction) but never reaches parity.
+- per-station (9): 7 worse; GAZIPUR −0.0005 (tie), RAJSHAHI −0.005 (marginal). Both inside the E10 seed0↔seed1 noise (~0.01 Στ).
+
+- **VERDICT: NO robust regime where physics improves accuracy.** Auto-flag found only station=GAZIPUR (tie) and station=RAJSHAHI (−0.005, within seed noise). Confirms E10 at the regime level; AirPhyNet's sparse/long-lead advantage does NOT replicate here. Consistent with PHYSICS_DIAGNOSIS R6 (O3/met-dominated predictability) + the structural fact that the implemented Leighton triad is a closed null cycle (conserves Oₓ, zero net O3) so it cannot generate the O3 extremes being scored.
+- **Implication:** physics stays positioned as interpretable/physics-guided (per CLAUDE.md integrity fallback), NOT an accuracy mechanism. Next lever = add HCHO (VOC/RO₂ proxy + HCHO/NO₂ regime ratio) so the box-ODE can PRODUCE O3 → planned E13.
+- fig figs/e12_strata.png ; artefacts/results_e12.json + artefacts/e12_preds.npz ; future met used as forcing (forecast-met assumption); rank-index [0,1] metrics.
+
+## Run THRCORR-Q70-20260620-032931  (EXTREME-DEFINITION CORRECTION: top-30% = H>=Q70; supersedes the inverted H>=Q30)
+- date: 2026-06-20T03:29:31 | code: pipeline/12b_threshold_q70.py | rank index; re-score of cached E10/E12 predictions (artefacts/e12_preds.npz); NO retraining; NO synthetic data
+- CORRECTION: 'extreme/hazardous' was wrongly defined as H>=Q30 (~70-83% of hours). Corrected to the
+  most-polluted top 30% = H>=Q70; Q90 kept as a secondary 'severe' tier. ALL prior Brier(exceedance)/
+  base-rate numbers in earlier run blocks were computed at the inverted Q30 cut and are SUPERSEDED here.
+- THRESHOLD-INDEPENDENT metrics (pinball, CRPS, PICP, CQR coverage, LOSO transfer) are UNCHANGED -- they
+  never used the threshold (model trains on the continuous H, not the binary label).
+
+- thresholds on train H: Q30(old)=0.3948  **Q70=0.6087**  Q80=0.6728  Q90=0.7611
+- test base rate (observed): Q30(OLD)=0.834, Q70=0.263, Q80=0.134, Q90=0.046
+
+**Brier(exceedance), test 2016, seed 0 -- re-scored at corrected cuts**
+| cut | base rate | FREE | HYBRID | PHYS-ONLY |
+|---|---|---|---|---|
+| Q30(OLD) | 0.834 | 0.1005 | 0.1197 | 0.1370 |
+| Q70 | 0.263 | 0.1101 | 0.1376 | 0.1940 |
+| Q80 | 0.134 | 0.0747 | 0.0976 | 0.1445 |
+| Q90 | 0.046 | 0.0338 | 0.0470 | 0.0648 |
+
+- **VERDICT unchanged & threshold-robust:** FREE < HYBRID < PHYS-ONLY at every cut (Q70 delta HYBRID-FREE = +0.0275, PHYS-ONLY-FREE = +0.0839). Correcting the extreme cut does not rescue the physics for accuracy.
+- NOTE: rank-index [0,1] metrics; thresholds fit on TRAIN only (leakage-free).

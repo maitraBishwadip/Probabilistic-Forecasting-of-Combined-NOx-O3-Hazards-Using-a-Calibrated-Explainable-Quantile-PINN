@@ -10,6 +10,15 @@
 > new measurement, a placeholder, or a hoped-for value. Where a result is unfavourable, it is stated
 > plainly. Plans/hypotheses live in `EXPERIMENT_DESIGN.md`; this file reports only outcomes.
 
+> 🛠 **CORRECTION (2026-06-20 · `RESULTS_LOG.md` THRCORR-Q70).** The "extreme/hazardous" class was
+> originally defined as `H ≥ Q30` — which wrongly labels ~70–83 % of hours "extreme." It is corrected
+> to the **most-polluted top 30 % = `H ≥ Q70(H_train) = 0.6087`**, with **Q90 = "severe" tier**. The
+> threshold change affects ONLY exceedance probability, **Brier(exceedance)**, and **base rate** —
+> recomputed (no retraining) as: test base-rate @Q70 = **0.263**, @Q90 = 0.046; Brier(exc)@Q70 FREE
+> **0.1101** / HYBRID 0.1376 / PHYS-ONLY 0.1940. Pinball / CRPS / PICP / CQR / LOSO are
+> **threshold-independent and unchanged**. Every `Q30` / "≥70 %" / base-rate `0.834` figure below is a
+> historical record at the inverted cut and is **superseded** by the Q70 numbers.
+
 ---
 
 ## 1. Study definition (locked) and data
@@ -19,7 +28,7 @@
 | Targets | **NOx and O₃** combined, whole dataset, **no regime conditioning** |
 | Combined target | a single **hazard index `H`** (see §3) |
 | Model output | the **full predictive distribution** of `H` (dense non-crossing conditional quantiles → CDF/PDF), per horizon |
-| Extreme definition | cutoff = **30th percentile of `H`** (train-fit) ⇒ **≥70 % of hours are the "hazardous" class** |
+| Extreme definition | cutoff = **70th percentile of `H`** (train-fit) ⇒ the most-polluted **top 30 % of hours are the "hazardous" class**; **Q90 = "severe" tier** (corrects the inverted Q30/≥70 % cut — see banner) |
 | Resolution / timing | **hourly, multi-step** — forecast `H_{t+1..t+24}` (next-24 h trajectory distribution) |
 | Splits | temporal (train **2014–15**, test **2016**) + **Leave-One-Station-Out (LOSO)** for transfer |
 
@@ -44,7 +53,7 @@ those hours are dropped from the data term only).
 - **Loss:** pinball (primary, on `H`) + concentration data-fit + physics/chemistry residuals + spread
   constraints. Physics weight `λ_phys` annealed 0→target.
 - **Scoring:** pinball + CRPS (distribution); PICP / interval width + PIT + CQR (calibration); Brier on
-  the exceedance probability `P(H≥thr)` (the ≥70 % hazard class); all across leads h = 1→24.
+  the exceedance probability `P(H≥thr)` (the top-30 % hazard class, `H≥Q70`); all across leads h = 1→24.
 
 ---
 
@@ -59,7 +68,7 @@ mid-study**, and this is the single most important caveat for reading absolute n
 - **RANK / quantile-uniform index (ADOPTED, runs: E5–E10):** `H = ½·F_NOx(NOx) + ½·F_O3(O3)` with the
   **train empirical CDF**, so each marginal is uniform[0,1] and neither dominates by scale/tail. This
   **rebalanced** the index (E5: variance-share 61.0 %/63.3 %; prediction correlation NOx 0.348 / O₃
-  0.629). `thr = Q₃₀(H_train) = 0.3948`.
+  0.629). `thr = Q₇₀(H_train) = 0.6087` (corrected extreme cut; top-30 % most-polluted). Q90 = 0.7611 (severe).
 
 > ⚠️ **Comparability rule.** ROBUST-index metrics (pinball ≈ 0.93–1.05) and RANK-index metrics
 > (≈ 0.20–0.32, on [0,1]) are on **different scales and are NOT comparable**. Compare only *within*
@@ -115,7 +124,7 @@ the **90 % interval stayed at 0.821 — tail-limited**, motivating the E6 tail w
 
 - FULL-rank metrics (**new scale, not comparable to robust runs**): pinball **0.197**, CRPS 0.0438,
   PICP80 0.708 / width 0.171, PICP90 0.843 / width 0.24, Brier(exc) 0.0972;
-  **test base-rate extreme = 0.834**.
+  **test base-rate extreme = 0.834** *(at the old Q30 cut; corrected top-30 % base-rate = **0.263** at Q70 — see banner)*.
 
 ### E6 — Tail calibration (extended grid + PIT + CQR) — `E6-20260615-233855` · RANK · 13-τ
 - raw: pinball **0.2197**, CRPS 0.0338, Brier(exc) 0.1204; tail pinball .9/.95/.99 = 0.0158/0.0099/0.0034.
@@ -264,10 +273,10 @@ conservation, per-station emission; `lam_c=0.3, lam_leighton=0.05`.
 |---|---|---|
 | Best probabilistic model (data-only) pinball | **≈ 0.195–0.210** | E8 (λ=0) 0.2054 · E10 FREE 0.195–0.210 |
 | CRPS | ≈ 0.044–0.047 | E10 FREE |
-| Brier (exceedance, Q30) | ≈ 0.096–0.102 | E8 / E10 FREE |
+| Brier (exceedance, **Q70** extreme) | **0.1101** FREE (HYBRID 0.1376, PHYS 0.1940) | THRCORR-Q70 |
 | Calibrated coverage (CQR) | 80→0.781, 90→0.892, 95→0.951 | E6 |
 | Spatial transfer gap (LOSO) | +0.0253 pinball | E7 |
-| Test base-rate of the ≥70 % class | 0.834 (Q30) | E5 / E8 |
+| Test base-rate of the **top-30 % extreme** class | **0.263** (Q70); 0.046 (Q90 severe) | THRCORR-Q70 |
 | Physics effect on accuracy | **neutral-to-negative** (best at λ=0; HYBRID +0.043) | E8, PHYSFORCE, E10 |
 | Explainability cross-method agreement | Pearson r = 0.917 | E9 |
 
@@ -308,9 +317,10 @@ tracks data volume and cleanliness.
    rank-index runs (E5–E10); different scales. All conclusions use the rank index. (§3)
 2. **Rank-index metrics are on [0,1]** and are for **internal comparison only** — not comparable across
    index definitions or to other papers' absolute numbers.
-3. **High base rate (≥70 % "extreme").** By construction the positive class is the majority; Brier and
-   exceedance skill must be read against the base rate (0.887/0.834/0.766 at Q25/Q30/Q35, E8-C), and the
-   upper tail (Q90) is scored separately so "moderate-but-deadly" and "severe" are both covered.
+3. **Corrected extreme = top-30 % (minority class).** The extreme/hazardous class is `H ≥ Q70` (the
+   most-polluted 30 %; test base-rate **0.263**), with `Q90` as a "severe" tier (base-rate 0.046). Brier
+   and exceedance skill are read against these base rates (0.263/0.134/0.046 at Q70/Q80/Q90, THRCORR-Q70).
+   *(Earlier text wrongly framed the class as the ≥70 % majority at the inverted Q30 cut — superseded.)*
 4. **Physics is neutral-to-negative for accuracy** (E8/PHYSFORCE/E10). Any physics claim in the paper
    must be about **interpretability/consistency**, not predictive gain.
 5. **Future-met forcing.** The physics variants (PHYSFORCE, E10) use *observed future* meteorology as
@@ -336,7 +346,7 @@ tracks data volume and cleanliness.
 
 ## 8. Reproducibility
 
-Seeds fixed (numpy/torch); train-only scalers, percentile threshold (`thr = Q₃₀ = 0.3948`), and the
+Seeds fixed (numpy/torch); train-only scalers, percentile threshold (`thr = Q₇₀ = 0.6087`, corrected; Q90 = 0.7611 severe), and the
 `H`-definition persisted as artefacts (`artefacts/qrpinn_meta.json`, `qrpinn_data.npz`); no leakage
 (every transform fit on 2014–15 only). Each stage writes machine-readable JSON
 (`results_e*.json`) consumed verbatim by the report. Code: `pipeline/02–11_*.py`. Source-of-truth log:

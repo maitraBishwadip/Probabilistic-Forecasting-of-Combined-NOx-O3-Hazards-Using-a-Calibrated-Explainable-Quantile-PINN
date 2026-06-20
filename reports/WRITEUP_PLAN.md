@@ -164,7 +164,7 @@ perfect-met assumption); richer emissions. (REPORT §7,§9)
 Keep **6 numbered equations** for a 5-page paper (mark *inline* ones to compress if tight).
 
 1. **Hazard index** — `H = ½ F_NOx(NOx) + ½ F_O3(O3)`, `F.` = train empirical CDF (rank/quantile-uniform). *(DESIGN §2; E5)*
-2. **Extreme / exceedance** — `thr = Q_{30}(H_train)=0.3948`; `p_{t+h}=P(H_{t+h}≥thr)=1−\hat F_{t+h}(thr)`. *(DESIGN §2)*
+2. **Extreme / exceedance** — `thr = Q_{70}(H_train)=0.6087` (corrected: most-polluted top 30 %; Q90=0.7611 severe); `p_{t+h}=P(H_{t+h}≥thr)=1−\hat F_{t+h}(thr)`. *(DESIGN §2; corrected — RESULTS_LOG THRCORR-Q70)*
 3. **Pinball + non-crossing head** — `ρ_τ(u)=u(τ−1{u<0})`; `Q_{τ_k}=Q_{τ_1}+Σ_{j≤k}softplus(δ_j)` (monotone). *(LIT §1; DESIGN §5)*
 4. **Box mass-balance + Leighton** — `dC_k/dt = E_k/H_mix −(VC/H_mix)C_k−(v_{d,k}/H_mix)C_k−Λ_kP C_k+R_k`; PSS residual `r_L = C_{O3}C_{NO}−(J/k(T))C_{NO2}`. *(DESIGN §3)*
 5. **Oₓ conservation** — `Ox=O3+NO2`; residual penalises fast `d(Ox)/dt` (slow terms only). *(DESIGN §3; LIT §6)* — *inline if tight*

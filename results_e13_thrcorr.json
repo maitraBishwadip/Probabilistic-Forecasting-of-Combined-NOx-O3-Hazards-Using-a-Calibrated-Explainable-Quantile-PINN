@@ -1,0 +1,39 @@
+{
+  "note": "THRCORR-Q70: re-score of cached E10/E12 predictions at the corrected extreme cut (top-30% = H>=Q70); Q90 = severe tier. No retraining; no synthetic data. pinball/CRPS/PICP/CQR/LOSO are threshold-independent and UNCHANGED.",
+  "thresholds": {
+    "Q30_old": 0.3948049545288086,
+    "Q70": 0.6086665391921997,
+    "Q80": 0.6727678179740906,
+    "Q90": 0.7610803842544556
+  },
+  "base_rate_test": {
+    "Q30(OLD)": 0.8342964808032169,
+    "Q70": 0.2627647721742694,
+    "Q80": 0.1344062956227749,
+    "Q90": 0.0459477371103655
+  },
+  "brier_exceedance": {
+    "Q30(OLD)": {
+      "free": 0.10045171868022049,
+      "hybrid": 0.11966448957546544,
+      "physonly": 0.13696554533190716
+    },
+    "Q70": {
+      "free": 0.11012554345536187,
+      "hybrid": 0.13762760789473769,
+      "physonly": 0.19401678374183556
+    },
+    "Q80": {
+      "free": 0.07471781639792965,
+      "hybrid": 0.09758870419668506,
+      "physonly": 0.1444617430601479
+    },
+    "Q90": {
+      "free": 0.03376553992153133,
+      "hybrid": 0.046987622708004086,
+      "physonly": 0.06479392098873622
+    }
+  },
+  "delta_hybrid_minus_free_Q70": 0.02750206443937582,
+  "delta_physonly_minus_free_Q70": 0.0838912402864737
+}

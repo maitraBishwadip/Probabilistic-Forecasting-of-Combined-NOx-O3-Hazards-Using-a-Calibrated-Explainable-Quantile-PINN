@@ -19,7 +19,7 @@ index** at **hourly, multi-step** lead times, and from it the probability of the
 | Targets | **NOx and O3**, whole dataset, **no regime conditioning** |
 | Combined target | a **single combined hazard index** `H` (§2) |
 | Output | the **entire predictive distribution** of `H` — a dense set of non-crossing conditional quantiles → CDF/PDF, per horizon |
-| Extreme | **cutoff = 30th percentile of `H` (train-fit)** ⇒ **≥70 % of observations are the hazardous class** |
+| Extreme | **cutoff = 70th percentile of `H` (train-fit)** ⇒ the **most-polluted top 30 % are the hazardous class**; **Q90 = secondary "severe" tier** (corrects an earlier inverted Q30 definition — see `RESULTS_LOG.md` THRCORR-Q70) |
 | Resolution / timing | **hourly, multi-step**: predict `H_{t+1..t+24}` (next-24 h trajectory distribution) |
 | Splits | temporal (train 2014–15, test 2016) + Leave-One-Station-Out (LOSO) |
 
@@ -33,7 +33,8 @@ health-meaningful. We fix scalers/weights/thresholds on **training data only**.
 - **ADOPTED definition (E5) — rank / quantile-uniform combination:**
   `H = ½·F_NOx(NOx) + ½·F_O3(O3)`, where `F_·` is the **train empirical CDF** (pooled) of each
   pollutant, so each marginal is **uniform[0,1]** and neither can dominate by scale or tail shape.
-  Interpretable as "both pollutants high relative to their own climatology." `thr = Q₃₀(H_train)`.
+  Interpretable as "both pollutants high relative to their own climatology." `thr = Q₇₀(H_train)`
+  (the most-polluted top 30 % are the extreme/hazardous class; Q90 = severe tier).
 - **DEPRECATED original — equal-weight robust-scaled combination:**
   `H = ½·s(NOx) + ½·s(O3)` with a **robust scaler** (median / IQR). E3 showed this lets **O3
   overpower** the index (Var-share O3 73% vs NOx 44%; prediction corr O3 0.90 vs NOx 0.12). The
@@ -45,11 +46,12 @@ health-meaningful. We fix scalers/weights/thresholds on **training data only**.
 - **Health-weighted variant (sensitivity only):** weights from concentration–response evidence
   (`LITERATURE_REVIEW.md §7`).
 
-**Extreme label / hazard region.** `thr = Q₃₀(H)` on the training set; an observation/forecast hour
-is "combined-extreme/hazardous" if `H ≥ thr` (≥70 % of data by construction). The model never trains
-on this binary label directly — it predicts the *distribution* of `H`; the exceedance probability
-`P(H_{t+h} ≥ thr)` is read off the predicted CDF. Report sensitivity at Q25/Q30/Q35 and at an
-upper-tail level (e.g., Q90) so the "moderate-but-deadly" and the "severe" regions are both covered.
+**Extreme label / hazard region.** `thr = Q₇₀(H)` on the training set; an observation/forecast hour
+is "combined-extreme/hazardous" if `H ≥ thr` (the most-polluted **top 30 %** by construction). The model
+never trains on this binary label directly — it predicts the *distribution* of `H`; the exceedance
+probability `P(H_{t+h} ≥ thr)` is read off the predicted CDF. Report sensitivity at **Q70/Q80/Q90** so
+the "extreme" (top-30 %) and the "severe" (top-10 %) regions are both covered. (Corrects an earlier
+*inverted* Q30/≥70 % definition; the re-score is recorded as `RESULTS_LOG.md` THRCORR-Q70.)
 
 ---
 
@@ -146,10 +148,10 @@ L =        Σ_{τ,h} pinball_τ( Q_τ(H_{t+h}), H_{t+h} )          # primary: di
 - **Distributional (primary):** average **pinball loss** over (τ, h); **CRPS** from the quantiles.
 - **Calibration:** prediction-interval coverage **PICP** vs nominal + mean interval width; **PIT
   histogram** / reliability; optional PIT-recalibration & conformal coverage (`LIT §5,§9`).
-- **Tail / hazard region:** treat `P(H_{t+h} ≥ thr)` as a probabilistic classifier of the ≥70 %
-  hazardous class → **Brier score + reliability**; also evaluate the **upper tail** (high-τ pinball
-  at τ=0.9/0.95; exceedance skill at Q90) so the broad hazard *and* the severe spikes are both
-  scored.
+- **Tail / hazard region:** treat `P(H_{t+h} ≥ thr)` as a probabilistic classifier of the
+  **top-30 % hazardous class (`H ≥ Q70`)** → **Brier score + reliability**; also evaluate the
+  **severe upper tail** (high-τ pinball at τ=0.9/0.95; exceedance skill at Q90) so the extreme
+  *and* the severe spikes are both scored.
 - **Lead-time degradation:** all metrics across h = 1 → 24 h.
 - **Spatial transfer:** **LOSO** (train 8 stations, test the 9th), metrics mean ± std over folds.
 - **Rigour:** bootstrap 95 % CIs on all headline metrics.
@@ -170,6 +172,7 @@ L =        Σ_{τ,h} pinball_τ( Q_τ(H_{t+h}), H_{t+h} )          # primary: di
 | **E8** | **Robustness** — threshold sensitivity (Q25/30/35/90), λ-physics sweep, seed. | **done** (`09_qrpinn_e8.py`) | `results_e8.json`, sensitivity tables |
 | **E9** | **Explainability** — post-hoc attribution of the frozen calibrated model: Integrated Gradients (median / tail-Q95 / interval-width / per-lead) + model-agnostic occlusion (ΔPinball/ΔCRPS/ΔBrier) + physics-group audit (day/night). See `METHODS_explainability.md` (§9). | **done** (`10_qrpinn_e9_xai.py`) | `results_e9.json`, attribution + temporal + group + day/night figs |
 | **E10** | **Physics-formulation fix** — diagnose why the embedded physics was ineffective (`PHYSICS_DIAGNOSIS.md`) and re-engineer it: physics-guided **hybrid** (NN-residual forecast + interpretable, semi-implicit NO/NO₂/O₃ box-ODE with Leighton + structural Oₓ conservation, per-station emission). Decisive FREE vs HYBRID vs PHYS-ONLY test, seeds 0/1. | **done** (`11_qrpinn_e10.py`) | `results_e10.json`, `figs/e10_physics.png` |
+| **E12** | **Regime-stratified physics value** — the pooled E10 verdict (physics ≠ accuracy) tested *per regime*, since PINN gains concentrate in sparse/gappy/tail/long-lead conditions (AirPhyNet ICLR'24; Krishnapriyan NeurIPS'21). **No new model design**: deterministically reproduce E10's seed-0 FREE/HYBRID/PHYS-ONLY (validity check vs `results_e10.json`), then stratify the FREE−HYBRID pinball gap by **(1) upper tail** (per-τ pinball τ=0.90/0.95, Brier@Q90, extreme-outcome subset H≥Q90), **(2) lead time** (h=1…24), **(3) input-window missingness** terciles, **(4) per-station** (in-distribution). Verdict: is there ANY regime where physics is ≤ FREE+0.003? LOSO FREE-vs-HYBRID is **deferred to E13** (needs 9-fold retraining). | **done** (`12_qrpinn_e12.py`) | `results_e12.json`, `e12_preds.npz`, `figs/e12_strata.png` |
 
 Nothing runs without explicit approval of its plan. (Numbering reflects actual run order; E5 was
 inserted in response to the E3 dominance finding.)
@@ -185,6 +188,19 @@ inserted in response to the E3 dominance finding.)
 > physically-ordered rates incl. per-station emission scales; forecast follows the rollout, corr≈0.75),
 > **not** as an accuracy mechanism — `CLAUDE.md §1` integrity rules + the diagnosis's honesty fallback.
 
+> **E12 finding (recorded fact, not a plan).** The pooled E10 verdict was tested *per regime* (upper tail,
+> lead time, input-window missingness, per-station), since PINN gains typically concentrate in sparse/tail/
+> long-lead conditions. **No robust regime was found where the embedded physics improves accuracy of `H`.**
+> HYBRID is worse than FREE at every lead (no long-lead crossover) and in every missingness tercile (though
+> the gap *narrows* in the theoretically-expected direction, +0.046→+0.040, never crossing), and worse in the
+> tail by both proper metrics (τ=0.95 pinball, Brier@Q90). The only HYBRID≤FREE slices are 2/9 stations
+> (GAZIPUR tie −0.0005, RAJSHAHI −0.005), both inside seed noise; the extreme-outcome-subset "win" for
+> PHYS-ONLY is a selection artifact of its positive bias. This **confirms E10 at the regime level** and is
+> consistent with the structural fact that the implemented Leighton triad is a closed null cycle (conserves
+> Oₓ, zero net O₃ production) — it cannot generate the O₃ extremes it is scored on. **Next lever (E13):**
+> add HCHO (`omi_column_hcho`) as a VOC/RO₂ proxy + the HCHO/NO₂ regime ratio so the box-ODE gains a net-O₃
+> production pathway. (E12 = stratified re-scoring of the reproduced E10 models; no §1/§3 decision changed.)
+
 ---
 
 ## 8. Reproducibility & risks
@@ -198,7 +214,7 @@ verbatim by the report; environment/package versions recorded with each run in `
 | NOx/O₃ gaps (≈25–37 % missing) | masking + physics residual propagate through gaps; never impute target `H` |
 | Diurnal NOx–O₃ anti-phasing at hourly scale | combined index `H` + Oₓ conservation absorb the fast titration; physics encodes it explicitly |
 | Quantile crossing | monotone-in-τ construction + non-crossing penalty |
-| ≥70 % positive ("extreme") class is high-base-rate | score with proper rules (pinball/CRPS) + calibration, and add an upper-tail (Q90) evaluation, not just the 70 % cut |
+| corrected extreme = top-30 % (minority, base-rate ≈0.26) class | score with proper rules (pinball/CRPS) + calibration; evaluate exceedance at Q70 (extreme) and Q90 (severe), not a single cut |
 | PINN training instability | anneal `λ_phys`, scale concentrations to O(1), curriculum on horizon |
 | Station heterogeneity / transfer | station embedding + LOSO; global (not regime) physics for transferability |
 
